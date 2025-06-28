@@ -1,5 +1,5 @@
 import { User } from "lucide-react";
-import NickNameForm from "../components/Form/NickNameForm";
+import NickNameForm from "@/components/NickName/NickNameForm";
 
 export default function NickNamePage() {
   return (
