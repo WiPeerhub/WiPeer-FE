@@ -24,7 +24,7 @@ const conversations = [
   },
 ];
 
-export default function ChatRoomList() {
+export default function ChatRoomListPage() {
   return (
     <ul>
       {conversations.map((item) => (
