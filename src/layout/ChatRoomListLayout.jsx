@@ -11,7 +11,7 @@ export default function ChatRoomListLayout() {
     <div className="flex h-screen w-[375px] flex-col justify-between border border-gray-200">
       {isRoomCreation && <CreateRoomPage />}
       <Header />
-      <main className="mb-auto">
+      <main className="mb-auto overflow-y-auto">
         <ChatRoomListPage />
       </main>
       <Footer />
