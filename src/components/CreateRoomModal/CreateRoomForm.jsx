@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useRoomCreationStore } from "../../stores/useRoomCreationStore";
+import { useRoomCreationStore } from "@/stores/useRoomCreationStore";
+import { useRoomListStore } from "@/stores/useRoomListStore";
 import TitleInput from "@/components/CreateRoomModal/TitleInput";
 import RoomDescriptionInput from "@/components/CreateRoomModal/RoomDescriptionInput";
 import PrivacySelector from "@/components/CreateRoomModal/PrivacySelector";
@@ -14,6 +15,7 @@ export default function CreateRoomForm() {
   const [password, setPassword] = useState("");
   const clientIP = useClientIP();
   const setIsRoomCreation = useRoomCreationStore((state) => state.setIsRoomCreation);
+  const fetchRooms = useRoomListStore((state) => state.fetchRooms);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +35,7 @@ export default function CreateRoomForm() {
       });
 
       const result = await res.json();
+      await fetchRooms(clientIP);
       console.log("방 생성 완료", result);
     } catch (err) {
       console.error("방 생성 실패", err);
