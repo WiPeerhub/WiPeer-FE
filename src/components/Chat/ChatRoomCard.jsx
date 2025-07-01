@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
 
 export default function ChatRoomCard(props) {
-  const { name, description, timestamp } = props;
+  const { roomId, name, description, timestamp } = props;
   const navigate = useNavigate();
 
   const moveToChatRoom = () => {
-    navigate("/page");
+    navigate(`/room/${roomId}`);
   };
 
   return (

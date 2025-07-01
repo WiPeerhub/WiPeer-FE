@@ -1,33 +1,37 @@
-import ChatRoomMessage from "@/components/Chat/ChatMessage";
+import ChatRoomMessage from "@/components/Chat/ChatRoomMessage";
 import { Send } from "lucide-react";
-
-const messages = [
-  {
-    id: "1",
-    username: "이드리스",
-    timestamp: "오후 3:15",
-    message: "안녕하세요! 새로운 프로젝트에 대해 논의해볼까요?",
-  },
-  {
-    id: "2",
-    username: "레베카",
-    timestamp: "오후 3:18",
-    message: "좋은 아이디어네요. 어떤 기술 스택을 사용할 예정인가요?",
-  },
-  {
-    id: "3",
-    username: "메릴",
-    timestamp: "오후 3:20",
-    message: "React와 Next.js를 사용하면 어떨까요? 최근에 많이 사용되고 있어서 좋을 것 같아요.",
-  },
-];
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useNickNameStore } from "@/stores/useNicknameStore";
+import useSocket from "@/hooks/useSocket";
 
 export default function ChatRoomPage() {
+  const [conversation, setConversation] = useState([]);
+  const [message, setMessage] = useState("");
+  const nickName = useNickNameStore((state) => state.nickName);
+  const { roomId } = useParams();
+  const sendMessage = useSocket(roomId);
+
+  const handleSendingMessage = () => {
+    if (!message.trim()) return;
+    sendMessage(message);
+    setMessage("");
+    setConversation([
+      ...conversation,
+      {
+        id: Date.now().toString(),
+        username: nickName,
+        timestamp: new Date().toLocaleTimeString(),
+        message,
+      },
+    ]);
+  };
+
   return (
     <div className="flex h-full flex-col bg-white">
       {/* 채팅 메시지 영역 */}
       <div className="flex-1 space-y-4 overflow-y-auto py-4">
-        {messages.map((message) => (
+        {conversation.map((message) => (
           <ChatRoomMessage
             key={message.id}
             username={message.username}
@@ -44,8 +48,12 @@ export default function ChatRoomPage() {
             type="text"
             placeholder="메시지를 입력하세요..."
             className="flex-1 bg-transparent text-gray-700 outline-none"
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSendingMessage();
+            }}
           />
-          <Send className="h-5 w-5 cursor-pointer text-blue-600" />
+          <Send onClick={handleSendingMessage} className="h-5 w-5 cursor-pointer text-blue-600" />
         </div>
       </div>
     </div>

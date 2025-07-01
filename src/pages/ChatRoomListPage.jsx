@@ -16,7 +16,13 @@ export default function ChatRoomListPage() {
   return (
     <ul>
       {rooms.map((room) => (
-        <ChatRoomCard key={room.roomId} name={room.title} description={room.description} timestamp={room.timestamp} />
+        <ChatRoomCard
+          key={room.roomId}
+          roomId={room.roomId}
+          name={room.title}
+          description={room.description}
+          timestamp={room.timestamp}
+        />
       ))}
     </ul>
   );
