@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useNickNameStore } from "@/stores/useNicknameStore";
 
 export default function NickNameForm() {
-  const [nickName, setNickName] = useState("");
+  const { nickName, setNickName } = useNickNameStore();
   const navigate = useNavigate();
 
   const moveToChatRoomList = (e) => {
