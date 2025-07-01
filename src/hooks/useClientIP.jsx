@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API } from "@/constants/api";
 
 export default function useClientIP() {
   const [ip, setIP] = useState("");
@@ -6,7 +7,7 @@ export default function useClientIP() {
   useEffect(() => {
     const fetchIP = async () => {
       try {
-        const res = await fetch("http://localhost:4000/ip");
+        const res = await fetch(API.GET_CLIENT_IP);
         const ipInfo = await res.json();
 
         setIP(ipInfo.ip);

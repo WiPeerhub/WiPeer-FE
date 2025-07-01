@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRoomCreationStore } from "@/stores/useRoomCreationStore";
 import { useRoomListStore } from "@/stores/useRoomListStore";
+import { API } from "../../constants/api";
 import TitleInput from "@/components/CreateRoomModal/TitleInput";
 import RoomDescriptionInput from "@/components/CreateRoomModal/RoomDescriptionInput";
 import PrivacySelector from "@/components/CreateRoomModal/PrivacySelector";
@@ -28,7 +29,7 @@ export default function CreateRoomForm() {
     };
 
     try {
-      const res = await fetch("http://localhost:4000/room", {
+      const res = await fetch(API.POST_ROOM, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

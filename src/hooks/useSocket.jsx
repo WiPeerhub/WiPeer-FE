@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
+import { BASE_URL } from "@/constants/api";
 import { createPeerConnection, handleOffer, handleAnswer, handleCandidate } from "@/utils/peerManager";
 
 export default function useSocket(roomId) {
@@ -8,7 +9,7 @@ export default function useSocket(roomId) {
   const dataChannelsRef = useRef({});
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_SERVER_URL);
+    const socket = io(BASE_URL);
     socketRef.current = socket;
 
     socket.on("connect", () => {
