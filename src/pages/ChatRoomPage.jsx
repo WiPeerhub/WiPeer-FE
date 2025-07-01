@@ -10,7 +10,7 @@ export default function ChatRoomPage() {
   const [message, setMessage] = useState("");
   const nickName = useNickNameStore((state) => state.nickName);
   const { roomId } = useParams();
-  const sendMessage = useSocket(roomId);
+  const sendMessage = useSocket(roomId, setConversation);
 
   const handleSendingMessage = () => {
     if (!message.trim()) return;
@@ -29,7 +29,6 @@ export default function ChatRoomPage() {
 
   return (
     <div className="flex h-full flex-col bg-white">
-      {/* 채팅 메시지 영역 */}
       <div className="flex-1 space-y-4 overflow-y-auto py-4">
         {conversation.map((message) => (
           <ChatRoomMessage
@@ -41,7 +40,6 @@ export default function ChatRoomPage() {
         ))}
       </div>
 
-      {/* 메시지 입력 영역 - 하단 고정 */}
       <div className="border-t border-gray-200 bg-white p-4">
         <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
           <input
