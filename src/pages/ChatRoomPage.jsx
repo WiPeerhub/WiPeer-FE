@@ -1,6 +1,6 @@
 import ChatRoomMessage from "@/components/Chat/ChatRoomMessage";
 import { Send } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNickNameStore } from "@/stores/useNicknameStore";
 import useSocket from "@/hooks/useSocket";
@@ -11,6 +11,11 @@ export default function ChatRoomPage() {
   const nickName = useNickNameStore((state) => state.nickName);
   const { roomId } = useParams();
   const sendMessage = useSocket(roomId, setConversation);
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [conversation]);
 
   const handleSendingMessage = () => {
     if (!message.trim()) return;
@@ -38,12 +43,14 @@ export default function ChatRoomPage() {
             message={message.message}
           />
         ))}
+        <div ref={bottomRef} />
       </div>
 
       <div className="border-t border-gray-200 bg-white p-4">
         <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
           <input
             type="text"
+            value={message}
             placeholder="메시지를 입력하세요..."
             className="flex-1 bg-transparent text-gray-700 outline-none"
             onChange={(e) => setMessage(e.target.value)}
