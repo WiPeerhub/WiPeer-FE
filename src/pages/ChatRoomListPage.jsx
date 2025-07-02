@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useRoomListStore } from "@/stores/useRoomListStore";
 import ChatRoomCard from "@/components/Chat/ChatRoomCard";
 import useClientIP from "@/hooks/useClientIP";
+import useSocket from "@/hooks/useSocket";
 
 export default function ChatRoomListPage() {
   const { rooms, fetchRooms } = useRoomListStore();
@@ -12,6 +13,8 @@ export default function ChatRoomListPage() {
       fetchRooms(clientIP);
     }
   }, [clientIP]);
+
+  useSocket(null, () => {});
 
   return (
     <ul>

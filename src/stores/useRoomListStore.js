@@ -8,4 +8,8 @@ export const useRoomListStore = create((set) => ({
     const roomsInfo = await res.json();
     set({ rooms: roomsInfo.rooms });
   },
+  setRoomList: (updater) =>
+    set((state) => ({
+      rooms: typeof updater === "function" ? updater(state.rooms) : updater,
+    })),
 }));
