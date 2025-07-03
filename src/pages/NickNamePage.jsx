@@ -9,7 +9,7 @@ export default function NickNamePage() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-600">
             <User className="h-8 w-8 text-white" />
           </div>
-          <h1 className="mb-2 text-2xl font-bold text-gray-900">채팅방 입장</h1>
+          <h1 className="mb-2 text-2xl font-bold text-gray-900">WiPeer 입장</h1>
           <p className="text-gray-600">사용할 닉네임을 입력해주세요</p>
         </div>
         <NickNameForm />
