@@ -39,7 +39,7 @@ export default function NickNameForm() {
         disabled={!nickName.trim()}
         className="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
       >
-        채팅방 입장하기
+        WiPeer 입장하기
       </button>
     </form>
   );
