@@ -34,7 +34,7 @@ export default function ChatRoomPage() {
 
   return (
     <div className="flex h-full flex-col bg-white">
-      <div className="flex-1 space-y-4 overflow-y-auto py-4">
+      <div className="flex-1 space-y-4 overflow-y-auto py-1">
         {conversation.map((message) => (
           <ChatRoomMessage
             key={message.id}
