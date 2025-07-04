@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useRoomCreationStore } from "@/stores/useRoomCreationStore";
 import { useRoomListStore } from "@/stores/useRoomListStore";
-import { API } from "../../constants/api";
+import { API } from "@/constants/api";
+import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import TitleInput from "@/components/CreateRoomModal/TitleInput";
 import RoomDescriptionInput from "@/components/CreateRoomModal/RoomDescriptionInput";
 import PrivacySelector from "@/components/CreateRoomModal/PrivacySelector";
@@ -20,12 +21,15 @@ export default function CreateRoomForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const ownerId = getOrCreateOwnerId();
 
     const payload = {
       ip: clientIP,
       title,
       description,
+      isPrivate,
       password: isPrivate ? password : null,
+      ownerId,
     };
 
     try {

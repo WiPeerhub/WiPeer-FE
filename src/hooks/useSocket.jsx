@@ -48,6 +48,10 @@ export default function useSocket(roomId, setConversation) {
       peersRef.current[socketId] = peer;
     });
 
+    socket.on("room-deleted", (deletedRoomId) => {
+      setRoomList((prev) => prev.filter((room) => room.roomId !== deletedRoomId));
+    });
+
     socket.on("offer", (payload) => handleOffer(payload, socket, peersRef, dataChannelsRef, setConversation));
     socket.on("answer", (payload) => handleAnswer(payload, peersRef));
     socket.on("ice-candidate", (payload) => handleCandidate(payload, peersRef));

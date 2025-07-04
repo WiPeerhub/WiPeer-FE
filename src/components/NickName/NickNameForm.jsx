@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useNickNameStore } from "@/stores/useNicknameStore";
+import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 
 export default function NickNameForm() {
   const { nickName, setNickName } = useNickNameStore();
@@ -11,6 +12,8 @@ export default function NickNameForm() {
     if (nickName === "") {
       return;
     }
+
+    getOrCreateOwnerId();
 
     navigate("/chatRoomList");
   };

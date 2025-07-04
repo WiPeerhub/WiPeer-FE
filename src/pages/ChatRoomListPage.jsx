@@ -21,6 +21,7 @@ export default function ChatRoomListPage() {
       {rooms.map((room) => (
         <ChatRoomCard
           key={room.roomId}
+          isPrivate={room.isPrivate}
           roomId={room.roomId}
           name={room.title}
           description={room.description}
