@@ -27,6 +27,7 @@ export default function ChatRoomListPage() {
           description={room.description}
           timestamp={room.timestamp}
           password={room.password}
+          roomOwnerId={room.ownerId}
         />
       ))}
     </ul>

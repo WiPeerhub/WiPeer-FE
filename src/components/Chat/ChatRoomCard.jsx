@@ -4,12 +4,15 @@ import { Lock, Globe, Clock, Trash2 } from "lucide-react";
 import { API } from "@/constants/api";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import PasswordModal from "@/components/PasswordConfirmModal/PasswordModal";
+import RoomDeleteModal from "@/components/RoomDeleteModal/RoomDeleteModal";
 
 export default function ChatRoomCard(props) {
-  const { isPrivate, roomId, name, description, timestamp, password } = props;
+  const { isPrivate, roomId, name, description, timestamp, password, roomOwnerId } = props;
   const [isPaswordInputOpen, setIsPaswordInputOpen] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [roomDeleteModalOpen, setRoomDeleteModalOpen] = useState(false);
+  const ownerId = getOrCreateOwnerId();
   const navigate = useNavigate();
 
   const moveToChatRoom = () => {
@@ -22,8 +25,6 @@ export default function ChatRoomCard(props) {
   };
 
   const handleDeleteRoom = async () => {
-    const ownerId = getOrCreateOwnerId();
-
     try {
       await fetch(API.deleteRoom(roomId), {
         method: "DELETE",
@@ -57,19 +58,31 @@ export default function ChatRoomCard(props) {
             <h3 className="truncate font-medium text-gray-900">{name}</h3>
             {description && <p className="truncate text-sm text-gray-500">{description}</p>}
           </div>
+          {ownerId === roomOwnerId && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setRoomDeleteModalOpen(true);
+              }}
+              className="cursor-pointer rounded-full p-1.5 group-hover:opacity-100 hover:bg-red-100"
+              title="채팅방 삭제"
+            >
+              <Trash2 className="h-4 w-4 text-red-500" />
+            </button>
+          )}
           <div className="flex items-center gap-1 text-xs text-gray-400">
             <Clock className="h-3 w-3" />
             <span>{timestamp || "활동 없음"}</span>
           </div>
         </div>
-        <button
-          onClick={(e) => handleDeleteRoom(e)}
-          className="cursor-pointer rounded-full p-1 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-100"
-          title="채팅방 삭제"
-        >
-          <Trash2 className="h-4 w-4 text-red-500" />
-        </button>
       </li>
+      {roomDeleteModalOpen && (
+        <RoomDeleteModal
+          name={name}
+          updateRoomDeleteModalOpen={setRoomDeleteModalOpen}
+          handleDeleteRoom={handleDeleteRoom}
+        />
+      )}
       {isPaswordInputOpen && (
         <PasswordModal
           errorMessage={errorMessage}
