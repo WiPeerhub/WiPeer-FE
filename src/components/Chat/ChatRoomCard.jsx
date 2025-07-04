@@ -1,18 +1,29 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, Globe, Clock, Trash2 } from "lucide-react";
 import { API } from "@/constants/api";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
+import PasswordModal from "@/components/PasswordConfirmModal/PasswordModal";
 
 export default function ChatRoomCard(props) {
-  const { isPrivate, roomId, name, description, timestamp } = props;
+  const { isPrivate, roomId, name, description, timestamp, password } = props;
+  const [isPaswordInputOpen, setIsPaswordInputOpen] = useState(false);
+  const [inputPassword, setInputPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const moveToChatRoom = () => {
+    if (password) {
+      setIsPaswordInputOpen(true);
+      return;
+    }
+
     navigate(`/room/${roomId}`);
   };
 
   const handleDeleteRoom = async () => {
     const ownerId = getOrCreateOwnerId();
+
     try {
       await fetch(API.deleteRoom(roomId), {
         method: "DELETE",
@@ -26,28 +37,48 @@ export default function ChatRoomCard(props) {
     }
   };
 
+  const handleModalConfirm = () => {
+    if (inputPassword === password) {
+      setIsPaswordInputOpen(false);
+      navigate(`/room/${roomId}`);
+    } else {
+      setErrorMessage("비밀번호가 올바르지 않습니다.");
+    }
+  };
+
   return (
-    <li className="group flex cursor-pointer items-center justify-between rounded-lg p-3 transition-colors hover:bg-gray-50">
-      <div onClick={moveToChatRoom} className="flex min-w-0 flex-1 items-center gap-3">
-        <div className="flex-shrink-0">
-          {isPrivate ? <Lock className="h-5 w-5 text-gray-500" /> : <Globe className="h-5 w-5 text-gray-500" />}
+    <>
+      <li className="group flex cursor-pointer items-center justify-between rounded-lg p-3 transition-colors hover:bg-gray-50">
+        <div onClick={moveToChatRoom} className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="flex-shrink-0">
+            {isPrivate ? <Lock className="h-5 w-5 text-gray-500" /> : <Globe className="h-5 w-5 text-gray-500" />}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate font-medium text-gray-900">{name}</h3>
+            {description && <p className="truncate text-sm text-gray-500">{description}</p>}
+          </div>
+          <div className="flex items-center gap-1 text-xs text-gray-400">
+            <Clock className="h-3 w-3" />
+            <span>{timestamp || "활동 없음"}</span>
+          </div>
         </div>
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate font-medium text-gray-900">{name}</h3>
-          {description && <p className="truncate text-sm text-gray-500">{description}</p>}
-        </div>
-        <div className="flex items-center gap-1 text-xs text-gray-400">
-          <Clock className="h-3 w-3" />
-          <span>{timestamp || "활동 없음"}</span>
-        </div>
-      </div>
-      <button
-        onClick={(e) => handleDeleteRoom(e)}
-        className="cursor-pointer rounded-full p-1 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-100"
-        title="채팅방 삭제"
-      >
-        <Trash2 className="h-4 w-4 text-red-500" />
-      </button>
-    </li>
+        <button
+          onClick={(e) => handleDeleteRoom(e)}
+          className="cursor-pointer rounded-full p-1 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-100"
+          title="채팅방 삭제"
+        >
+          <Trash2 className="h-4 w-4 text-red-500" />
+        </button>
+      </li>
+      {isPaswordInputOpen && (
+        <PasswordModal
+          errorMessage={errorMessage}
+          inputPassword={inputPassword}
+          passwordInputOpen={setIsPaswordInputOpen}
+          updateInputPassword={setInputPassword}
+          confirmPassword={handleModalConfirm}
+        />
+      )}
+    </>
   );
 }
