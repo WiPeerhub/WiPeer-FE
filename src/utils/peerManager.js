@@ -20,16 +20,8 @@ export function createPeerConnection(socket, targetId, initiator, setConversatio
 
     channel.onopen = () => console.log("사용자의 dataChannel 열림");
     channel.onmessage = (e) => {
-      const { username, message } = JSON.parse(e.data);
-      setConversation((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          username: username || "initiator 상대방",
-          timestamp: new Date().toLocaleTimeString(),
-          message,
-        },
-      ]);
+      const messageObj = JSON.parse(e.data);
+      setConversation((prev) => [...prev, messageObj]);
       console.log("기존 사용자가 보낸 메시지: ", e.data);
     };
 
@@ -46,16 +38,8 @@ export function createPeerConnection(socket, targetId, initiator, setConversatio
 
       channel.onopen = () => console.log("새로운 사용자의 dataChannel 열림");
       channel.onmessage = (e) => {
-        const { username, message } = JSON.parse(e.data);
-        setConversation((prev) => [
-          ...prev,
-          {
-            id: Date.now().toString(),
-            username: username || "non-initiator 상대방",
-            timestamp: new Date().toLocaleTimeString(),
-            message,
-          },
-        ]);
+        const messageObj = JSON.parse(e.data);
+        setConversation((prev) => [...prev, messageObj]);
         console.log("새로운 사용자가 받은 메시지:", e.data);
       };
     };
@@ -83,18 +67,10 @@ export async function handleOffer({ sender, sdp }, socket, peersRef, dataChannel
 
     channel.onopen = () => console.log("Offer opened");
     channel.onmessage = (e) => {
-      const { username, message } = JSON.parse(e.data);
+      const messageObj = JSON.parse(e.data);
       console.log("handleOffer Message: ", e.data);
 
-      setConversation((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          username: username || "offer 상대방",
-          timestamp: new Date().toLocaleTimeString(),
-          message,
-        },
-      ]);
+      setConversation((prev) => [...prev, messageObj]);
     };
   };
 

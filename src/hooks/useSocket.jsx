@@ -61,14 +61,7 @@ export default function useSocket(roomId, setConversation) {
     };
   }, [roomId]);
 
-  const sendMessage = (message) => {
-    const messageObj = {
-      id: Date.now().toString(),
-      username: nickName,
-      timestamp: new Date().toLocaleTimeString(),
-      message,
-    };
-
+  const sendMessage = (messageObj) => {
     Object.values(dataChannelsRef.current).forEach((channel) => {
       if (channel.readyState === "open") channel.send(JSON.stringify(messageObj));
     });
