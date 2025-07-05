@@ -1,5 +1,7 @@
+import { FileText, Download } from "lucide-react";
+
 export default function ChatRoomMessage(props) {
-  const { username, timestamp, message } = props;
+  const { type, username, timestamp, message, files = [] } = props;
 
   return (
     <div className="flex gap-3 rounded-lg p-2 hover:bg-gray-50">
@@ -8,9 +10,39 @@ export default function ChatRoomMessage(props) {
           <span className="text-sm font-semibold text-gray-900">{username}</span>
           <span className="text-xs text-gray-500">{timestamp}</span>
         </div>
-        <div>
+        {(type === "message" || (type === "mixed" && message)) && (
           <p className="text-sm leading-relaxed text-gray-700">{message}</p>
-        </div>
+        )}
+        {type === "mixed" && files.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-3">
+            {files.map((file) => {
+              const isImage = file.fileType?.startsWith("image/");
+              return isImage ? (
+                <a href={file.downloadUrl} download={file.fileName} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={file.preview || file.fileUrl}
+                    alt={file.fileName}
+                    className="max-w-[200px] cursor-pointer rounded shadow"
+                  />
+                </a>
+              ) : (
+                <div className="flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm">
+                  <FileText className="h-4 w-4 text-gray-500" />
+                  <span>{file.fileName}</span>
+                  <a
+                    href={file.downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download={file.fileName}
+                    className="ml-auto text-blue-500 hover:underline"
+                  >
+                    <Download className="h-4 w-4" />
+                  </a>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
