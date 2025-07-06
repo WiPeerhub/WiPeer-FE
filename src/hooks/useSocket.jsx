@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import { BASE_URL } from "@/constants/api";
-import { useNickNameStore } from "@/stores/useNicknameStore";
 import { useRoomListStore } from "@/stores/useRoomListStore";
 import { createPeerConnection, handleOffer, handleAnswer, handleCandidate } from "@/utils/peerManager";
 
@@ -9,7 +8,6 @@ export default function useSocket(roomId, setConversation) {
   const socketRef = useRef(null);
   const peersRef = useRef({});
   const dataChannelsRef = useRef({});
-  const nickName = useNickNameStore((state) => state.nickName);
   const setRoomList = useRoomListStore((state) => state.setRoomList);
 
   useEffect(() => {
