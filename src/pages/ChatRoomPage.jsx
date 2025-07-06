@@ -5,15 +5,14 @@ import UploadedFileList from "@/components/FileUpload/UploadedFileList";
 import FileUploadButton from "@/components/FileUpload/FileUploadButton";
 import HiddenFileInput from "@/components/FileUpload/HiddenFileInput";
 import { useParams } from "react-router-dom";
-import { useNickNameStore } from "@/stores/useNicknameStore";
 import useSocket from "@/hooks/useSocket";
-import { uploadFileToS3 } from "@/utils/uploadFileToS3";
+import { uploadCompressedFileToS3 } from "@/utils/uploadCompressedFileToS3";
 
 export default function ChatRoomPage() {
   const [conversation, setConversation] = useState([]);
   const [message, setMessage] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const nickName = useNickNameStore((state) => state.nickName);
+  const nickName = localStorage.getItem("nickName");
   const { roomId } = useParams();
   const sendMessage = useSocket(roomId, setConversation);
   const bottomRef = useRef(null);
@@ -50,7 +49,7 @@ export default function ChatRoomPage() {
 
     if (hasFile) {
       for (const fileItem of selectedFiles) {
-        const { fileUrl, downloadUrl } = await uploadFileToS3(fileItem);
+        const { fileUrl, downloadUrl } = await uploadCompressedFileToS3(fileItem);
 
         const fileInfoObj = {
           fileUrl,
