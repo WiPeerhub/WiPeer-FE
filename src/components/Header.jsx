@@ -1,15 +1,27 @@
-import { Menu, Settings, Search } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
+import { useSearchValueStore } from "@/stores/useSearchValueStore";
 
 export default function Header() {
+  const { searchValue, setSearchValue } = useSearchValueStore();
+
   return (
-    <div className="justify-content flex h-[60px] w-full items-center justify-between bg-blue-500 pr-[8px] pl-[8px]">
-      <div className="flex items-center gap-3">
-        <Menu className="cursor-pointer text-white"></Menu>
-        <h1 className="text-xl font-semibold text-white">WiPeer</h1>
-      </div>
-      <div className="flex items-center gap-3">
-        <Settings className="h-6 w-6 text-white" />
-        <Search className="h-6 w-6 text-white" />
+    <div className="h-[60px] w-full border-b border-gray-200 bg-white shadow-sm">
+      <div className="flex h-full items-center justify-center px-4">
+        <button className="curosr-pointer rounded-full p-2 transition-colors hover:bg-gray-100" title="뒤로가기">
+          <ArrowLeft className="h-5 w-5 text-gray-600" />
+        </button>
+        <div className="w-full max-w-md">
+          <div className="relative">
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+            <input
+              type="text"
+              value={searchValue}
+              placeholder="채팅방 검색..."
+              className="w-full rounded-full border border-gray-200 bg-gray-50 py-2 pr-4 pl-10 transition-all duration-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
