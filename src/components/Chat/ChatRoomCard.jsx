@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lock, Globe, Clock, Trash2 } from "lucide-react";
+import { Lock, Users, Clock, Trash2 } from "lucide-react";
 import { API } from "@/constants/api";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import PasswordModal from "@/components/PasswordConfirmModal/PasswordModal";
@@ -52,7 +52,13 @@ export default function ChatRoomCard(props) {
       <li className="group flex cursor-pointer items-center justify-between rounded-lg p-3 transition-colors hover:bg-gray-50">
         <div onClick={moveToChatRoom} className="flex min-w-0 flex-1 items-center gap-3">
           <div className="flex-shrink-0">
-            {isPrivate ? <Lock className="h-5 w-5 text-gray-500" /> : <Globe className="h-5 w-5 text-gray-500" />}
+            <div
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                isPrivate ? "bg-orange-100" : "bg-blue-100"
+              }`}
+            >
+              {isPrivate ? <Lock className="h-5 w-5 text-orange-600" /> : <Users className="h-5 w-5 text-blue-500" />}
+            </div>
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="truncate font-medium text-gray-900">{name}</h3>
