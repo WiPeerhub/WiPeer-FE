@@ -1,14 +1,33 @@
 import { ArrowLeft, Search } from "lucide-react";
 import { useSearchValueStore } from "@/stores/useSearchValueStore";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Header() {
   const { searchValue, setSearchValue } = useSearchValueStore();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const goBack = () => {
+    const currentPath = location.pathname;
+
+    if (currentPath === "/chatRoomList") {
+      navigate("/");
+    } else if (currentPath.startsWith("/room")) {
+      navigate("/chatRoomList");
+    } else {
+      return;
+    }
+  };
 
   return (
     <div className="h-[60px] w-full border-b border-gray-200 bg-white shadow-sm">
       <div className="flex h-full items-center justify-center px-4">
-        <button className="curosr-pointer rounded-full p-2 transition-colors hover:bg-gray-100" title="뒤로가기">
-          <ArrowLeft className="h-5 w-5 text-gray-600" />
+        <button
+          onClick={goBack}
+          className="curosr-pointer rounded-full p-2 transition-colors hover:bg-gray-100"
+          title="뒤로가기"
+        >
+          <ArrowLeft className="curosr-pointer h-5 w-5 text-gray-600" />
         </button>
         <div className="w-full max-w-md">
           <div className="relative">
