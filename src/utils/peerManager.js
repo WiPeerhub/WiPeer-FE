@@ -3,8 +3,8 @@ const config = {
     { urls: "stun:stun.l.google.com:19302" },
     {
       urls: import.meta.env.VITE_TURN_URL,
-      username: "hyeongyun",
-      credential: "970825",
+      username: import.meta.env.VITE_TURN_USERNAME,
+      credential: import.meta.env.VITE_TURN_CREDENTIAL,
     },
   ],
 };
