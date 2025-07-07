@@ -1,11 +1,12 @@
 import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 
 export default function useIPChangeAlert(ip) {
   const prevIP = useRef("");
 
   useEffect(() => {
     if (prevIP.current && prevIP.current !== ip) {
-      alert(`IP가 변경되었습니다!\n이전: ${prevIP.current}\n현재: ${ip}`);
+      toast.warning("네트워크가 변경되었습니다.");
     }
     prevIP.current = ip;
   }, [ip]);
