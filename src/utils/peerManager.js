@@ -1,5 +1,12 @@
 const config = {
-  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
+    {
+      urls: import.meta.env.VITE_TURN_URL,
+      username: "hyeongyun",
+      credential: "970825",
+    },
+  ],
 };
 
 export function createPeerConnection(socket, targetId, initiator, setConversation, dataChannelsRef) {
