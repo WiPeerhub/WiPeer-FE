@@ -22,6 +22,8 @@ jobs:
         run: |
           echo "VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}" > .env.production
           echo "VITE_TURN_URL=${{ secrets.VITE_TURN_URL }}" >> .env.production
+          echo "VITE_TURN_USERNAME=${{ secrets.VITE_TURN_USERNAME }}" >> .env.production
+          echo "VITE_TURN_CREDENTIAL=${{ secrets.VITE_TURN_CREDENTIAL }}" >> .env.production
 
       - name: Show .env.production contents
         run: cat .env.production
@@ -36,6 +38,8 @@ jobs:
         run: |
           echo "VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}" > .env.production
           echo "VITE_TURN_URL=${{ secrets.VITE_TURN_URL }}" >> .env.production
+          echo "VITE_TURN_USERNAME=${{ secrets.VITE_TURN_USERNAME }}" >> .env.production
+          echo "VITE_TURN_CREDENTIAL=${{ secrets.VITE_TURN_CREDENTIAL }}" >> .env.production
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
