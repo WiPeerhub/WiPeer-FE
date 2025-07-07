@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { API } from "@/constants/api";
+import { useClientIPStore } from "@/stores/useClientIPStore";
 
 export default function useClientIP() {
-  const [ip, setIP] = useState("");
+  const { ip, setIP } = useClientIPStore();
 
   const fetchIP = async () => {
     try {

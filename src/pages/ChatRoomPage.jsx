@@ -7,8 +7,6 @@ import HiddenFileInput from "@/components/FileUpload/HiddenFileInput";
 import { useParams } from "react-router-dom";
 import useSocket from "@/hooks/useSocket";
 import { uploadCompressedFileToS3 } from "@/utils/uploadCompressedFileToS3";
-import useClientIP from "@/hooks/useClientIP";
-import useIPChangeAlert from "@/hooks/useIPChangeAlert";
 
 export default function ChatRoomPage() {
   const [conversation, setConversation] = useState([]);
@@ -19,8 +17,6 @@ export default function ChatRoomPage() {
   const sendMessage = useSocket(roomId, setConversation);
   const bottomRef = useRef(null);
   const fileInputRef = useRef(null);
-  const clientIP = useClientIP();
-  useIPChangeAlert(clientIP);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

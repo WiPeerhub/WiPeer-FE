@@ -6,7 +6,10 @@ export default function useIPChangeAlert(ip) {
 
   useEffect(() => {
     if (prevIP.current && prevIP.current !== ip) {
-      toast.warning("네트워크가 변경되었습니다.");
+      toast.warning("네트워크가 변경되었습니다.", {
+        duration: 4000,
+        id: "ip-change",
+      });
     }
     prevIP.current = ip;
   }, [ip]);
