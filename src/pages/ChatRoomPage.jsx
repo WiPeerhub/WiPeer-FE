@@ -52,6 +52,7 @@ export default function ChatRoomPage() {
         const { fileUrl, downloadUrl } = await uploadCompressedFileToS3(fileItem);
 
         const fileInfoObj = {
+          id: fileItem.id,
           fileUrl,
           downloadUrl,
           fileName: fileItem.name,
