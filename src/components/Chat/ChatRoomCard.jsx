@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, Users, Clock, Trash2 } from "lucide-react";
 import { API } from "@/constants/api";
@@ -8,12 +8,28 @@ import RoomDeleteModal from "@/components/RoomDeleteModal/RoomDeleteModal";
 
 export default function ChatRoomCard(props) {
   const { isPrivate, roomId, name, description, timestamp, password, roomOwnerId } = props;
+  const [lastMessagetimestamp, setLastMessagetimestamp] = useState("");
   const [isPaswordInputOpen, setIsPaswordInputOpen] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [roomDeleteModalOpen, setRoomDeleteModalOpen] = useState(false);
   const ownerId = getOrCreateOwnerId();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchLastMessage = async () => {
+      try {
+        const res = await fetch(API.getLastMessage(roomId));
+        const lastMessageData = await res.json();
+
+        setLastMessagetimestamp(lastMessageData.data?.timestamp || "활동 없음");
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchLastMessage();
+  }, [roomId]);
 
   const moveToChatRoom = () => {
     if (password) {
@@ -78,7 +94,7 @@ export default function ChatRoomCard(props) {
           )}
           <div className="flex items-center gap-1 text-xs text-gray-400">
             <Clock className="h-3 w-3" />
-            <span>{timestamp || "활동 없음"}</span>
+            <span>{lastMessagetimestamp}</span>
           </div>
         </div>
       </li>
