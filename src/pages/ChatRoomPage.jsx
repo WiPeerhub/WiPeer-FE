@@ -16,10 +16,20 @@ export default function ChatRoomPage() {
   const { roomId } = useParams();
   const sendMessage = useSocket(roomId, setConversation);
   const bottomRef = useRef(null);
+  const scrollContainerRef = useRef(null);
+  const isFirstRender = useRef(true);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    if (isFirstRender.current && conversation.length > 0) {
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+      isFirstRender.current = false;
+    } else {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [conversation]);
 
   const handleFileSelect = (event) => {
@@ -80,9 +90,13 @@ export default function ChatRoomPage() {
     setConversation((prev) => [...prev, combinedMessage]);
   };
 
+  const handleImageLoad = () => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div className="flex h-full flex-col bg-white">
-      <div className="flex-1 space-y-4 overflow-y-auto py-1">
+      <div ref={scrollContainerRef} className="hide-scrollbar flex-1 space-y-4 overflow-y-auto py-1">
         {conversation.map((message) => (
           <ChatRoomMessage
             key={message.id}
@@ -91,6 +105,7 @@ export default function ChatRoomPage() {
             timestamp={message.timestamp}
             message={message.message}
             files={message.files}
+            onImageLoad={handleImageLoad}
           />
         ))}
         <div ref={bottomRef} />
@@ -111,7 +126,7 @@ export default function ChatRoomPage() {
             className="flex-1 bg-transparent text-gray-700 outline-none"
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleSendingMessage();
+              if (e.key === "Enter" && !e.nativeEvent.isComposing) handleSendingMessage();
             }}
           />
           <Send onClick={handleSendingMessage} className="h-5 w-5 cursor-pointer text-blue-600" />
