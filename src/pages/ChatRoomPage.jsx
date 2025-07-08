@@ -80,7 +80,7 @@ export default function ChatRoomPage() {
       id: Date.now().toString(),
       type: hasFile ? "mixed" : "message",
       username: nickName,
-      timestamp: new Date().toLocaleTimeString(),
+      timestamp: new Date().toISOString(),
       message: hasMessage ? message : "",
       files: uploadedFiles.length > 0 ? uploadedFiles : [],
     };
