@@ -22,10 +22,15 @@ export default function ChatRoomCard(props) {
       try {
         const res = await fetch(API.getLastMessage(roomId));
         const lastMessageData = await res.json();
-        const date = new Date(lastMessageData.data?.timestamp);
-        const formattedTimestamp = formatTimestamp(date);
+        const rawTimeStamp = lastMessageData.data?.timestamp;
 
-        setLastMessagetimestamp(formattedTimestamp);
+        if (!rawTimeStamp) {
+          setLastMessagetimestamp("활동 없음");
+        } else {
+          const date = new Date(rawTimeStamp);
+          const formattedTimestamp = formatTimestamp(date);
+          setLastMessagetimestamp(formattedTimestamp);
+        }
       } catch (err) {
         console.error(err);
       }
