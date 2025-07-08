@@ -14,7 +14,7 @@ export default function ChatRoomListLayout() {
       <div className="flex items-center justify-between border-b border-gray-200 p-4">
         <h2 className="text-lg font-semibold text-gray-900">채팅방 목록</h2>
       </div>
-      <main className="mb-auto overflow-y-auto">
+      <main className="hide-scrollbar mb-auto overflow-y-auto">
         <ChatRoomListPage />
       </main>
       <Footer />
