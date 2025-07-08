@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "browser-image-compression": "^2.0.2",
+    "fuse.js": "^7.1.0",
+    "hangul-js": "^0.2.6",
     "lucide-react": "^0.524.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
