@@ -1,7 +1,7 @@
 import { FileText, Download } from "lucide-react";
 
 export default function ChatRoomMessage(props) {
-  const { type, username, timestamp, message, files = [] } = props;
+  const { type, username, timestamp, message, files = [], onImageLoad } = props;
 
   return (
     <div className="flex gap-3 rounded-lg p-2 hover:bg-gray-50">
@@ -19,7 +19,12 @@ export default function ChatRoomMessage(props) {
               const isImage = file.fileType?.startsWith("image/");
               return isImage ? (
                 <a key={file.id} href={file.downloadUrl} download={file.fileName} rel="noopener noreferrer">
-                  <img src={file.fileUrl} alt={file.fileName} className="max-w-[200px] cursor-pointer rounded shadow" />
+                  <img
+                    src={file.fileUrl}
+                    alt={file.fileName}
+                    onLoad={onImageLoad}
+                    className="max-w-[200px] cursor-pointer rounded shadow"
+                  />
                 </a>
               ) : (
                 <div
@@ -30,7 +35,6 @@ export default function ChatRoomMessage(props) {
                   <span>{file.fileName}</span>
                   <a
                     href={file.downloadUrl}
-                    target="_blank"
                     rel="noopener noreferrer"
                     download={file.fileName}
                     className="ml-auto text-blue-500 hover:underline"
