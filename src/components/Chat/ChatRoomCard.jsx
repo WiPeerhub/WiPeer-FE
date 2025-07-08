@@ -5,9 +5,10 @@ import { API } from "@/constants/api";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import PasswordModal from "@/components/PasswordConfirmModal/PasswordModal";
 import RoomDeleteModal from "@/components/RoomDeleteModal/RoomDeleteModal";
+import { formatTimestamp } from "@/utils/formatTimestamp";
 
 export default function ChatRoomCard(props) {
-  const { isPrivate, roomId, name, description, timestamp, password, roomOwnerId } = props;
+  const { isPrivate, roomId, name, description, password, roomOwnerId } = props;
   const [lastMessagetimestamp, setLastMessagetimestamp] = useState("");
   const [isPaswordInputOpen, setIsPaswordInputOpen] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
@@ -21,8 +22,10 @@ export default function ChatRoomCard(props) {
       try {
         const res = await fetch(API.getLastMessage(roomId));
         const lastMessageData = await res.json();
+        const date = new Date(lastMessageData.data?.timestamp);
+        const formattedTimestamp = formatTimestamp(date);
 
-        setLastMessagetimestamp(lastMessageData.data?.timestamp || "활동 없음");
+        setLastMessagetimestamp(formattedTimestamp);
       } catch (err) {
         console.error(err);
       }

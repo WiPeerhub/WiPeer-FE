@@ -1,14 +1,17 @@
 import { FileText, Download } from "lucide-react";
+import { formatTimestamp } from "@/utils/formatTimestamp";
 
 export default function ChatRoomMessage(props) {
   const { type, username, timestamp, message, files = [], onImageLoad } = props;
+  const date = new Date(timestamp);
+  const formattedTimestamp = formatTimestamp(date);
 
   return (
     <div className="flex gap-3 rounded-lg p-2 hover:bg-gray-50">
       <div className="flex-1">
         <div className="mb-1 flex items-center gap-2">
           <span className="text-sm font-semibold text-gray-900">{username}</span>
-          <span className="text-xs text-gray-500">{timestamp}</span>
+          <span className="text-xs text-gray-500">{formattedTimestamp}</span>
         </div>
         {(type === "message" || (type === "mixed" && message)) && (
           <p className="text-sm leading-relaxed text-gray-700">{message}</p>
