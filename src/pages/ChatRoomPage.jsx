@@ -121,15 +121,19 @@ export default function ChatRoomPage() {
         <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
           <FileUploadButton fileInputRef={fileInputRef} />
           <HiddenFileInput fileInputRef={fileInputRef} handleFileSelect={handleFileSelect} />
-          <input
+          <textarea
             type="text"
             value={message}
             placeholder="메시지를 입력하세요..."
-            className="flex-1 bg-transparent text-gray-700 outline-none"
+            className="flex-1 resize-none overflow-hidden bg-transparent py-2 text-gray-700 outline-none"
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.nativeEvent.isComposing) handleSendingMessage();
+              if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                e.preventDefault();
+                handleSendingMessage();
+              }
             }}
+            rows={1}
           />
           <Send onClick={handleSendingMessage} className="h-5 w-5 cursor-pointer text-blue-600" />
         </div>

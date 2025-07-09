@@ -14,7 +14,7 @@ export default function ChatRoomMessage(props) {
           <span className="text-xs text-gray-500">{formattedTimestamp}</span>
         </div>
         {(type === "message" || (type === "mixed" && message)) && (
-          <p className="text-sm leading-relaxed text-gray-700">{message}</p>
+          <p className="text-sm leading-relaxed whitespace-pre-wrap text-gray-700">{message}</p>
         )}
         {type === "mixed" && files.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-3">
