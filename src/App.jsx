@@ -6,6 +6,7 @@ import useClientIP from "@/hooks/useClientIP";
 import useIPChangeAlert from "@/hooks/useIPChangeAlert";
 import { useClientIPStore } from "@/stores/useClientIPStore";
 import { Toaster } from "sonner";
+import MyActivityLayout from "@/layout/MyActivityLayout";
 
 export default function App() {
   useClientIP();
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/" element={<NickNamePage />}></Route>
         <Route path="/room/:roomId" element={<ChatRoomPageLayout />}></Route>
         <Route path="/chatRoomList" element={<ChatRoomListLayout />}></Route>
+        <Route path="/myActivity" element={<MyActivityLayout />}></Route>
       </Routes>
     </>
   );
