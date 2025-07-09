@@ -9,6 +9,7 @@ import PrivacySelector from "@/components/CreateRoomModal/PrivacySelector";
 import SubmitButton from "@/components/CreateRoomModal/SubmitButton";
 import CreateRoomHeader from "@/components/CreateRoomModal/CreateRoomHeader";
 import useClientIP from "@/hooks/useClientIP";
+import { incrementRoomCount } from "@/utils/setOrGetNicknameStats";
 
 export default function CreateRoomForm() {
   const [title, setTitle] = useState("");
@@ -18,6 +19,7 @@ export default function CreateRoomForm() {
   const clientIP = useClientIP();
   const setIsRoomCreation = useRoomCreationStore((state) => state.setIsRoomCreation);
   const fetchRooms = useRoomListStore((state) => state.fetchRooms);
+  const nickName = localStorage.getItem("nickName");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,6 +43,7 @@ export default function CreateRoomForm() {
 
       const result = await res.json();
       await fetchRooms(clientIP);
+      incrementRoomCount(nickName);
       console.log("방 생성 완료", result);
     } catch (err) {
       console.error("방 생성 실패", err);

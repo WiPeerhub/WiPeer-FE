@@ -6,6 +6,7 @@ import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import PasswordModal from "@/components/PasswordConfirmModal/PasswordModal";
 import RoomDeleteModal from "@/components/RoomDeleteModal/RoomDeleteModal";
 import { formatTimestamp } from "@/utils/formatTimestamp";
+import { decrementRoomCount } from "@/utils/setOrGetNicknameStats";
 
 export default function ChatRoomCard(props) {
   const { isPrivate, roomId, name, description, password, roomOwnerId } = props;
@@ -14,6 +15,7 @@ export default function ChatRoomCard(props) {
   const [inputPassword, setInputPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [roomDeleteModalOpen, setRoomDeleteModalOpen] = useState(false);
+  const nickName = localStorage.getItem("nickName");
   const ownerId = getOrCreateOwnerId();
   const navigate = useNavigate();
 
@@ -57,6 +59,8 @@ export default function ChatRoomCard(props) {
         },
         body: JSON.stringify({ ownerId }),
       });
+
+      decrementRoomCount(nickName);
     } catch (err) {
       console.error("삭제 에러:", err.message);
     }

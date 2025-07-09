@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
+import { setNickNameStat } from "@/utils/setOrGetNicknameStats";
 import { useState } from "react";
 
 export default function NickNameForm() {
@@ -15,6 +16,7 @@ export default function NickNameForm() {
 
     getOrCreateOwnerId();
     localStorage.setItem("nickName", nickName);
+    setNickNameStat(nickName);
     navigate("/chatRoomList");
   };
 

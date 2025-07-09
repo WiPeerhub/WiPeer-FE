@@ -7,6 +7,7 @@ import HiddenFileInput from "@/components/FileUpload/HiddenFileInput";
 import { useParams } from "react-router-dom";
 import useSocket from "@/hooks/useSocket";
 import { uploadCompressedFileToS3 } from "@/utils/uploadCompressedFileToS3";
+import { incrementMessageCount } from "@/utils/setOrGetNicknameStats";
 
 export default function ChatRoomPage() {
   const [conversation, setConversation] = useState([]);
@@ -86,6 +87,7 @@ export default function ChatRoomPage() {
     };
 
     sendMessage(combinedMessage);
+    incrementMessageCount(nickName);
     setMessage("");
     setConversation((prev) => [...prev, combinedMessage]);
   };
