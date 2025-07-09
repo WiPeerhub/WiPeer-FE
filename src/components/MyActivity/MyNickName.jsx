@@ -5,7 +5,7 @@ export default function MyNickName() {
   const nickNameStats = getAllNickNameStats();
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="hide-scrollbar h-full overflow-y-auto rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="mb-4 flex items-center gap-3">
         <User className="h-5 w-5 text-blue-600" />
         <h2 className="text-lg font-semibold text-gray-900">사용한 닉네임</h2>
@@ -26,7 +26,7 @@ export default function MyNickName() {
 
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-100">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100">
                     <MessageCircle className="h-4 w-4 text-blue-600" />
                   </div>
                   <div className="text-center">
@@ -35,7 +35,7 @@ export default function MyNickName() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-100">
                     <Home className="h-4 w-4 text-green-600" />
                   </div>
                   <div className="text-center">

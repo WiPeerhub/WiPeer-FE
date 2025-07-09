@@ -11,7 +11,7 @@ export default function MyActivityLayout() {
     <div className="flex h-screen w-[375px] flex-col justify-between border border-gray-200">
       {isRoomCreation && <CreateRoomPage />}
       <Header />
-      <main>
+      <main className="h-[calc(100vh-140px)] flex-1">
         <MyActivityPage />
       </main>
       <Footer />
