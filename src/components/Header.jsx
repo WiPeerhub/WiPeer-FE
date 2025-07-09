@@ -14,6 +14,8 @@ export default function Header() {
       navigate("/");
     } else if (currentPath.startsWith("/room")) {
       navigate("/chatRoomList");
+    } else if (currentPath === "/myActivity") {
+      navigate("/chatRoomList");
     } else {
       return;
     }
