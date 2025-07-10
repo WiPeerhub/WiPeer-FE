@@ -10,7 +10,7 @@ export default function ChatRoomPageLayout() {
   return (
     <div className="h-screen-dvh flex w-[375px] flex-col justify-between border border-gray-200">
       <Header />
-      <main className="h-[calc(100vh-140px)] flex-1">
+      <main className="flex-1 overflow-y-auto">
         <ChatRoomPage />
       </main>
       <Footer />
