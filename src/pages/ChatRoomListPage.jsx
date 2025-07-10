@@ -61,7 +61,7 @@ export default function ChatRoomListPage() {
   }, [clientIP]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomRef.current?.scrollIntoView({ behavior: "auto" });
   }, [rooms]);
 
   useSocket(null, () => {});
