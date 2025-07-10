@@ -8,13 +8,13 @@ export default function ChatRoomPageLayout() {
   const isRoomCreation = useRoomCreationStore((state) => state.isRoomCreation);
 
   return (
-    <div className="flex h-screen w-[375px] flex-col justify-between border border-gray-200">
-      {isRoomCreation && <CreateRoomPage />}
+    <div className="h-screen-dvh flex w-[375px] flex-col justify-between border border-gray-200">
       <Header />
       <main className="h-[calc(100vh-140px)] flex-1">
         <ChatRoomPage />
       </main>
       <Footer />
+      {isRoomCreation && <CreateRoomPage />}
     </div>
   );
 }

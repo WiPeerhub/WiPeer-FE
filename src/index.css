@@ -29,3 +29,9 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+@supports (height: 100dvh) {
+  .h-screen-dvh {
+    height: 100dvh;
+  }
+}
