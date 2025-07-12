@@ -98,9 +98,7 @@ export default function ChatRoomPage() {
   };
 
   const handleUpdateMessage = (updatedMessage) => {
-    setConversation((prev) => {
-      prev.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg));
-    });
+    setConversation((prev) => prev.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg)));
   };
 
   return (
