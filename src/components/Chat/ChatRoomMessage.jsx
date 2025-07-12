@@ -8,7 +8,7 @@ import UpdateMessage from "@/components/Chat/UpdateMessage";
 export default function ChatRoomMessage(props) {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { messageId, roomId, type, username, timestamp, message, files = [], onImageLoad } = props;
+  const { messageId, onUpdateMessage, roomId, type, username, timestamp, message, files = [], onImageLoad } = props;
   const [newMessage, setNewMessage] = useState(message);
   const date = new Date(timestamp);
   const formattedTimestamp = formatTimestamp(date);
@@ -28,15 +28,15 @@ export default function ChatRoomMessage(props) {
         }),
       });
 
+      const upddatedMessage = await res.json();
+
       if (!res.ok) {
-        const errorData = await res.json();
-        console.error("메시지 수정 실패:", errorData.message);
+        console.error("메시지 수정 실패:", upddatedMessage.message);
         return;
       }
 
-      const { data } = await res.json();
-
-      console.log("message 수정 완료: ", data);
+      console.log("message 수정 완료: ", upddatedMessage.data);
+      onUpdateMessage(upddatedMessage.data);
       setIsEditing(false);
     } catch (err) {
       console.error("메시지 전송 실패:", err);

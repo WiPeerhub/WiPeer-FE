@@ -103,6 +103,7 @@ export default function ChatRoomPage() {
         {conversation.map((message) => (
           <ChatRoomMessage
             key={message.id}
+            onUpdateMessage={setMessage}
             messageId={message.id}
             roomId={roomId}
             type={message.type}
