@@ -80,6 +80,7 @@ export default function ChatRoomPage() {
     const combinedMessage = {
       id: Date.now().toString(),
       type: hasFile ? "mixed" : "message",
+      ownerId: localStorage.getItem("ownerId"),
       username: nickName,
       timestamp: new Date().toISOString(),
       message: hasMessage ? message : "",
