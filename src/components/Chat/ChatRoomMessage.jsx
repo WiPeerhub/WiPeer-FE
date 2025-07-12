@@ -1,54 +1,73 @@
-import { FileText, Download } from "lucide-react";
+import { useState } from "react";
 import { formatTimestamp } from "@/utils/formatTimestamp";
+import { API } from "@/constants/api";
+import EditMessageMenu from "@/components/Chat/EditMessageMenu";
+import ShowFileList from "@/components/Chat/ShowFileList";
+import UpdateMessage from "@/components/Chat/UpdateMessage";
 
 export default function ChatRoomMessage(props) {
-  const { type, username, timestamp, message, files = [], onImageLoad } = props;
+  const [isHovered, setIsHovered] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const { messageId, roomId, type, username, timestamp, message, files = [], onImageLoad } = props;
+  const [newMessage, setNewMessage] = useState(message);
   const date = new Date(timestamp);
   const formattedTimestamp = formatTimestamp(date);
 
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  const handleUpdateMessage = async () => {
+    try {
+      const res = await fetch(API.updateMessage(roomId, messageId), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          newMessage,
+          ownerId: localStorage.getItem("ownerId"),
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("메시지 수정 실패:", errorData.message);
+        return;
+      }
+
+      const { data } = await res.json();
+
+      console.log("message 수정 완료: ", data);
+      setIsEditing(false);
+    } catch (err) {
+      console.error("메시지 전송 실패:", err);
+    }
+  };
+
   return (
-    <div className="flex gap-3 rounded-lg p-2 hover:bg-gray-50">
-      <div className="flex-1">
-        <div className="mb-1 flex items-center gap-2">
+    <div
+      className="relative flex gap-3 hover:bg-gray-100"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+    >
+      {isHovered && <EditMessageMenu onEdit={() => setIsEditing(true)} />}
+      <div className="flex-1 p-2">
+        <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-gray-900">{username}</span>
           <span className="text-xs text-gray-500">{formattedTimestamp}</span>
         </div>
-        {(type === "message" || (type === "mixed" && message)) && (
-          <p className="text-sm leading-relaxed whitespace-pre-wrap text-gray-700">{message}</p>
+        {isEditing ? (
+          <UpdateMessage
+            newMessage={newMessage}
+            updateMessage={setNewMessage}
+            handleUpdateMessage={handleUpdateMessage}
+            setIsEditing={setIsEditing}
+          />
+        ) : (
+          (type === "message" || (type === "mixed" && message)) && (
+            <p className="text-sm leading-relaxed whitespace-pre-wrap text-gray-700">{message}</p>
+          )
         )}
-        {type === "mixed" && files.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-3">
-            {files.map((file) => {
-              const isImage = file.fileType?.startsWith("image/");
-              return isImage ? (
-                <a key={file.id} href={file.downloadUrl} download={file.fileName} rel="noopener noreferrer">
-                  <img
-                    src={file.fileUrl}
-                    alt={file.fileName}
-                    onLoad={onImageLoad}
-                    className="max-w-[200px] cursor-pointer rounded shadow"
-                  />
-                </a>
-              ) : (
-                <div
-                  key={file.id}
-                  className="flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm"
-                >
-                  <FileText className="h-4 w-4 text-gray-500" />
-                  <span>{file.fileName}</span>
-                  <a
-                    href={file.downloadUrl}
-                    rel="noopener noreferrer"
-                    download={file.fileName}
-                    className="ml-auto text-blue-500 hover:underline"
-                  >
-                    <Download className="h-4 w-4" />
-                  </a>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {type === "mixed" && files.length > 0 && <ShowFileList files={files} onImageLoad={onImageLoad} />}
       </div>
     </div>
   );

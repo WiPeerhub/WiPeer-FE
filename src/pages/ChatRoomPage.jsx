@@ -98,10 +98,12 @@ export default function ChatRoomPage() {
 
   return (
     <div className="flex h-full flex-col bg-white">
-      <div ref={scrollContainerRef} className="hide-scrollbar flex-1 space-y-4 overflow-y-auto py-1">
+      <div ref={scrollContainerRef} className="hide-scrollbar flex-1 overflow-y-auto">
         {conversation.map((message) => (
           <ChatRoomMessage
             key={message.id}
+            messageId={message.id}
+            roomId={roomId}
             type={message.type}
             username={message.username}
             timestamp={message.timestamp}
