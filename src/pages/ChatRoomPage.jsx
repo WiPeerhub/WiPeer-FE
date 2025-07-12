@@ -97,13 +97,19 @@ export default function ChatRoomPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleUpdateMessage = (updatedMessage) => {
+    setConversation((prev) => {
+      prev.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg));
+    });
+  };
+
   return (
     <div className="flex h-full flex-col bg-white">
       <div ref={scrollContainerRef} className="hide-scrollbar flex-1 overflow-y-auto">
         {conversation.map((message) => (
           <ChatRoomMessage
             key={message.id}
-            onUpdateMessage={setMessage}
+            onUpdateMessage={handleUpdateMessage}
             messageId={message.id}
             roomId={roomId}
             type={message.type}

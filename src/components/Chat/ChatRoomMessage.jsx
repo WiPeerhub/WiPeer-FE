@@ -36,7 +36,7 @@ export default function ChatRoomMessage(props) {
       }
 
       console.log("message 수정 완료: ", upddatedMessage.data);
-      onUpdateMessage(upddatedMessage.data.message);
+      onUpdateMessage(upddatedMessage.data);
       setIsEditing(false);
     } catch (err) {
       console.error("메시지 전송 실패:", err);
