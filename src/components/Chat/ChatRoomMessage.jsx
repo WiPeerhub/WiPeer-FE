@@ -4,14 +4,29 @@ import { API } from "@/constants/api";
 import EditMessageMenu from "@/components/Chat/EditMessageMenu";
 import ShowFileList from "@/components/Chat/ShowFileList";
 import UpdateMessage from "@/components/Chat/UpdateMessage";
+import SelectEmoji from "@/components/Chat/SelectEmoji";
 
 export default function ChatRoomMessage(props) {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { messageId, onUpdateMessage, roomId, type, username, timestamp, message, files = [], onImageLoad } = props;
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [reactions, setReactions] = useState({});
+  const {
+    messageId,
+    messageOwnerId,
+    roomId,
+    type,
+    username,
+    timestamp,
+    message,
+    files = [],
+    onImageLoad,
+    onEditMessageMenuLoad,
+  } = props;
   const [newMessage, setNewMessage] = useState(message);
   const date = new Date(timestamp);
   const formattedTimestamp = formatTimestamp(date);
+  const ownerId = localStorage.getItem("ownerId");
 
   const handleMouseLeave = () => {
     setIsHovered(false);
@@ -24,23 +39,40 @@ export default function ChatRoomMessage(props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           newMessage,
-          ownerId: localStorage.getItem("ownerId"),
+          ownerId,
         }),
       });
 
-      const upddatedMessage = await res.json();
+      const updatedMessage = await res.json();
 
       if (!res.ok) {
-        console.error("메시지 수정 실패:", upddatedMessage.message);
+        console.error("메시지 수정 실패:", updatedMessage.message);
         return;
       }
 
-      console.log("message 수정 완료: ", upddatedMessage.data);
-      onUpdateMessage(upddatedMessage.data);
+      setIsHovered(false);
       setIsEditing(false);
     } catch (err) {
       console.error("메시지 전송 실패:", err);
     }
+  };
+
+  const handleDeleteMessage = () => {
+    const deleteMessage = async () => {
+      try {
+        await fetch(API.deleteMessage(roomId, messageId), {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ownerId }),
+        });
+      } catch (err) {
+        console.error("메시지 전송 실패:", err);
+      }
+    };
+
+    deleteMessage();
   };
 
   return (
@@ -49,7 +81,22 @@ export default function ChatRoomMessage(props) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
     >
-      {isHovered && <EditMessageMenu onEdit={() => setIsEditing(true)} />}
+      <div className="absolute right-2 flex items-center gap-1">
+        {isHovered && (
+          <SelectEmoji
+            showEmojiPicker={showEmojiPicker}
+            setShowEmojiPicker={setShowEmojiPicker}
+            updateReactions={setReactions}
+            reactions={reactions}
+            roomId={roomId}
+            messageId={messageId}
+            setIsHovered={setIsHovered}
+          />
+        )}
+        {isHovered && ownerId === messageOwnerId && (
+          <EditMessageMenu onEdit={() => setIsEditing(true)} onDelete={handleDeleteMessage} />
+        )}
+      </div>
       <div className="flex-1 p-2">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-gray-900">{username}</span>
@@ -61,6 +108,7 @@ export default function ChatRoomMessage(props) {
             updateMessage={setNewMessage}
             handleUpdateMessage={handleUpdateMessage}
             setIsEditing={setIsEditing}
+            onEditMessageMenuLoad={onEditMessageMenuLoad}
           />
         ) : (
           (type === "message" || (type === "mixed" && message)) && (
@@ -68,6 +116,19 @@ export default function ChatRoomMessage(props) {
           )
         )}
         {type === "mixed" && files.length > 0 && <ShowFileList files={files} onImageLoad={onImageLoad} />}
+        {reactions && Object.keys(reactions).length > 0 && (
+          <ul className="mt-1 flex gap-1">
+            {Object.entries(reactions).map(([emoji, users]) => (
+              <li
+                key={emoji}
+                className="flex cursor-pointer items-center gap-1 rounded-full border border-blue-300 bg-blue-100 px-2 py-1 text-xs transition-colors hover:bg-blue-200"
+              >
+                <span>{emoji}</span>
+                <span className="text-[10px] text-blue-700">{users.length}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

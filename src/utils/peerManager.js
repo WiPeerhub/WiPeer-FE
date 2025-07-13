@@ -28,7 +28,15 @@ export function createPeerConnection(socket, targetId, initiator, setConversatio
     channel.onopen = () => console.log("사용자의 dataChannel 열림");
     channel.onmessage = (e) => {
       const messageObj = JSON.parse(e.data);
-      setConversation((prev) => [...prev, messageObj]);
+
+      setConversation((prev) => {
+        const exist = prev.find((msg) => msg.id === messageObj.id);
+        if (exist) {
+          return prev.map((msg) => (msg.id === messageObj.id ? messageObj : msg));
+        } else {
+          return [...prev, messageObj];
+        }
+      });
       console.log("기존 사용자가 보낸 메시지: ", e.data);
     };
 
@@ -46,7 +54,15 @@ export function createPeerConnection(socket, targetId, initiator, setConversatio
       channel.onopen = () => console.log("새로운 사용자의 dataChannel 열림");
       channel.onmessage = (e) => {
         const messageObj = JSON.parse(e.data);
-        setConversation((prev) => [...prev, messageObj]);
+
+        setConversation((prev) => {
+          const exist = prev.find((msg) => msg.id === messageObj.id);
+          if (exist) {
+            return prev.map((msg) => (msg.id === messageObj.id ? messageObj : msg));
+          } else {
+            return [...prev, messageObj];
+          }
+        });
         console.log("새로운 사용자가 받은 메시지:", e.data);
       };
     };
@@ -77,7 +93,14 @@ export async function handleOffer({ sender, sdp }, socket, peersRef, dataChannel
       const messageObj = JSON.parse(e.data);
       console.log("handleOffer Message: ", e.data);
 
-      setConversation((prev) => [...prev, messageObj]);
+      setConversation((prev) => {
+        const exist = prev.find((msg) => msg.id === messageObj.id);
+        if (exist) {
+          return prev.map((msg) => (msg.id === messageObj.id ? messageObj : msg));
+        } else {
+          return [...prev, messageObj];
+        }
+      });
     };
   };
 

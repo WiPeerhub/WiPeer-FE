@@ -31,6 +31,15 @@ export default function useSocket(roomId, setConversation) {
       setConversation((prev) => [...prev, messageObj]);
     });
 
+    socket.on("message-updated", (updatedMessage) => {
+      console.log(updatedMessage);
+      setConversation((prev) => prev.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg)));
+    });
+
+    socket.on("message-deleted", (messageId) => {
+      setConversation((prev) => prev.filter((msg) => msg.id !== messageId));
+    });
+
     socket.on("all-users", (users) => {
       users.forEach((socketId) => {
         const { peer, channel } = createPeerConnection(socket, socketId, true, setConversation, dataChannelsRef);

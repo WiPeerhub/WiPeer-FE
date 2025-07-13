@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MoreVertical, Edit, Trash2 } from "lucide-react";
 
-export default function EditMessage({ onEdit }) {
+export default function EditMessage({ onEdit, onDelete }) {
   const [isEditOrRemoveModal, setIsEditOrRemoveModal] = useState(false);
   const menuRef = useRef(null);
 
@@ -16,7 +16,7 @@ export default function EditMessage({ onEdit }) {
   }, []);
 
   return (
-    <div className="absolute right-2 flex items-center gap-1 rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white shadow-sm">
       <div className="relative">
         <button
           onClick={() => {
@@ -30,13 +30,13 @@ export default function EditMessage({ onEdit }) {
       {isEditOrRemoveModal && (
         <div
           ref={menuRef}
-          className="absolute right-0 z-10 mt-1 w-24 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+          className="absolute right-0 z-40 mt-1 w-24 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
         >
           <button
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
             onClick={() => {
               setIsEditOrRemoveModal(false);
-              onEdit?.();
+              onEdit();
             }}
           >
             <Edit className="size h-3 w-3 text-xs" />
@@ -46,6 +46,7 @@ export default function EditMessage({ onEdit }) {
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
             onClick={() => {
               setIsEditOrRemoveModal(false);
+              onDelete();
             }}
           >
             <Trash2 className="h-3 w-3 text-xs" />
