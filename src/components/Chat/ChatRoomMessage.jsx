@@ -73,6 +73,26 @@ export default function ChatRoomMessage(props) {
     };
 
     deleteMessage();
+
+    const deleteS3File = async () => {
+      if (files && files.length > 0) {
+        const fileKeys = files.map((file) => {
+          return decodeURIComponent(new URL(file.fileUrl).pathname.slice(1));
+        });
+
+        await fetch(API.DELETE_S3_File, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ fileKeys }),
+        });
+      } else {
+        return;
+      }
+    };
+
+    deleteS3File();
   };
 
   return (
