@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import ChatRoomListLayout from "@/layout/ChatRoomListLayout";
 import ChatRoomPageLayout from "@/layout/ChatRoomPageLayout";
 import NickNamePage from "@/pages/NickNamePage";
@@ -19,12 +19,13 @@ export default function App() {
     <>
       <Toaster position="top-center" richColors closeButton />
       <Routes>
-        <Route path="/" element={<NickNamePage />}></Route>
-        <Route path="/room/:roomId" element={<ChatRoomPageLayout />}></Route>
-        <Route path="/chatRoomList" element={<ChatRoomListLayout />}></Route>
-        <Route path="/myActivity" element={<MyActivityLayout />}></Route>
-        <Route path="/login" element={<LoginPage />}></Route>
-        <Route path="/oauth/callback" element={<OAuthCallback />}></Route>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/main" element={<NickNamePage />} />
+        <Route path="/room/:roomId" element={<ChatRoomPageLayout />} />
+        <Route path="/chatRoomList" element={<ChatRoomListLayout />} />
+        <Route path="/myActivity" element={<MyActivityLayout />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
       </Routes>
     </>
   );

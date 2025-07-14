@@ -22,8 +22,7 @@ export default function OAuthCallback() {
       const userInfo = await res.json();
       setUserInfo(userInfo);
       localStorage.setItem("ownerId", userInfo.id);
-      console.log(userInfo);
-      navigate("/", { replace: true });
+      navigate("/main", { replace: true });
     };
 
     fetchUser();
