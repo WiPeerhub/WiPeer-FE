@@ -13,6 +13,7 @@ export default function ChatRoomPage() {
   const [conversation, setConversation] = useState([]);
   const [message, setMessage] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [isFileUploading, setIsFileUpLoading] = useState(false);
   const nickName = localStorage.getItem("nickName");
   const { roomId } = useParams();
   const sendMessage = useSocket(roomId, setConversation);
@@ -42,6 +43,8 @@ export default function ChatRoomPage() {
       size: file.size,
       type: file.type,
       preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+      isUploading: true,
+      abortController: new AbortController(),
     }));
 
     setSelectedFiles((prev) => [...prev, ...newFiles]);
@@ -59,8 +62,9 @@ export default function ChatRoomPage() {
     const uploadedFiles = [];
 
     if (hasFile) {
+      setIsFileUpLoading(true);
       for (const fileItem of selectedFiles) {
-        const { fileUrl, downloadUrl } = await uploadCompressedFileToS3(fileItem);
+        const { fileUrl, downloadUrl } = await uploadCompressedFileToS3(fileItem, fileItem.abortController.signal);
 
         const fileInfoObj = {
           id: fileItem.id,
@@ -75,6 +79,7 @@ export default function ChatRoomPage() {
       }
 
       setSelectedFiles([]);
+      setIsFileUpLoading(false);
     }
 
     const combinedMessage = {
@@ -97,17 +102,13 @@ export default function ChatRoomPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleUpdateMessage = (updatedMessage) => {
-    setConversation((prev) => prev.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg)));
-  };
-
   return (
     <div className="flex h-full flex-col bg-white">
       <div ref={scrollContainerRef} className="hide-scrollbar flex-1 overflow-y-auto">
         {conversation.map((message) => (
           <ChatRoomMessage
             key={message.id}
-            onUpdateMessage={handleUpdateMessage}
+            messageOwnerId={message.ownerId}
             messageId={message.id}
             roomId={roomId}
             type={message.type}
@@ -116,13 +117,19 @@ export default function ChatRoomPage() {
             message={message.message}
             files={message.files}
             onImageLoad={handleImageLoad}
+            onEditMessageMenuLoad={handleImageLoad}
           />
         ))}
         <div ref={bottomRef} />
       </div>
 
       {selectedFiles.length > 0 && (
-        <UploadedFileList selectedFiles={selectedFiles} updateSelectedFiles={setSelectedFiles} />
+        <UploadedFileList
+          isFileUploading={isFileUploading}
+          updateFileUploadingState={setIsFileUpLoading}
+          selectedFiles={selectedFiles}
+          updateSelectedFiles={setSelectedFiles}
+        />
       )}
 
       <div className="border-t border-gray-200 bg-white p-4">

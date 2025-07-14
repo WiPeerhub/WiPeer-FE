@@ -1,7 +1,7 @@
 import imageCompression from "browser-image-compression";
 import { uploadFileToS3 } from "@/utils/uploadFileToS3";
 
-export async function uploadCompressedFileToS3(fileItem) {
+export async function uploadCompressedFileToS3(fileItem, signal) {
   try {
     const options = {
       maxSizeMB: 1,
@@ -17,7 +17,7 @@ export async function uploadCompressedFileToS3(fileItem) {
       fileItem.size = newFileSize;
     }
 
-    const { fileUrl, downloadUrl } = await uploadFileToS3(fileItem);
+    const { fileUrl, downloadUrl } = await uploadFileToS3(fileItem, signal);
 
     return { fileUrl, downloadUrl };
   } catch (err) {

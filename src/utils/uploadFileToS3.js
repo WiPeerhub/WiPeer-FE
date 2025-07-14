@@ -1,6 +1,6 @@
 import { API } from "@/constants/api";
 
-export async function uploadFileToS3(file) {
+export async function uploadFileToS3(file, signal) {
   const res = await fetch(API.uploadFile(file.type, file.name));
   console.log("File:", file);
   console.log(file.name, file.type, file.size);
@@ -14,6 +14,7 @@ export async function uploadFileToS3(file) {
       "Content-Type": file.type,
     },
     body: file.file,
+    signal,
   });
 
   if (!uploadRes.ok) throw new Error("S3 업로드 실패");
