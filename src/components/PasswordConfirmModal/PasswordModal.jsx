@@ -16,6 +16,7 @@ export default function PasswordModal({
           inputPassword={inputPassword}
           updateInputPassword={updateInputPassword}
           errorMessage={errorMessage}
+          confirmPassword={confirmPassword}
         />
         <PasswordConfirmButton passwordInputOpen={passwordInputOpen} confirmPassword={confirmPassword} />
       </div>

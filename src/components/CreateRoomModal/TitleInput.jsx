@@ -1,6 +1,6 @@
 import { Hash } from "lucide-react";
 
-export default function TitleInput({ title, updateTitle }) {
+export default function TitleInput({ title, isFormValid, onHandelSubmit, updateTitle }) {
   return (
     <div>
       <label htmlFor="title" className="mb-2 block text-sm font-medium text-gray-700">
@@ -13,6 +13,12 @@ export default function TitleInput({ title, updateTitle }) {
           id="title"
           value={title}
           onChange={(e) => updateTitle(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && isFormValid) {
+              e.preventDefault();
+              onHandelSubmit(e);
+            }
+          }}
           placeholder="방 제목을 입력하세요"
           className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 transition-colors outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
           maxLength={50}

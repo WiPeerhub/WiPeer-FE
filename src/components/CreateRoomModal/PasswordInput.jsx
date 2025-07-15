@@ -1,6 +1,6 @@
 import { Key } from "lucide-react";
 
-export default function PasswordInput({ password, updatePassword, isPrivate }) {
+export default function PasswordInput({ password, isFormValid, onHandelSubmit, updatePassword, isPrivate }) {
   return (
     <>
       {isPrivate && (
@@ -14,7 +14,13 @@ export default function PasswordInput({ password, updatePassword, isPrivate }) {
               type="password"
               id="password"
               value={password}
+              autoComplete="new-password"
               onChange={(e) => updatePassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && isFormValid) {
+                  onHandelSubmit(e);
+                }
+              }}
               placeholder="비밀번호를 입력하세요"
               className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 transition-colors outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
               maxLength={20}

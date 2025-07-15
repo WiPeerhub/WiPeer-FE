@@ -115,6 +115,7 @@ export default function ChatRoomPage() {
             username={message.username}
             timestamp={message.timestamp}
             message={message.message}
+            emojis={message.reactions}
             files={message.files}
             onImageLoad={handleImageLoad}
             onEditMessageMenuLoad={handleImageLoad}

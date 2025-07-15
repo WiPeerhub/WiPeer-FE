@@ -8,6 +8,12 @@ export default function RoomDescriptionInput({ description, updateDescription })
         id="description"
         value={description}
         onChange={(e) => updateDescription(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            document.querySelector("form")?.requestSubmit();
+          }
+        }}
         placeholder="방에 대한 간단한 설명을 입력하세요"
         className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-colors outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
         rows={3}

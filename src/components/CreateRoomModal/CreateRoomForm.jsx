@@ -58,12 +58,14 @@ export default function CreateRoomForm() {
     <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
       <form className="space-y-4 p-6" onSubmit={handleSubmit}>
         <CreateRoomHeader />
-        <TitleInput title={title} updateTitle={setTitle} />
+        <TitleInput title={title} isFormValid={isFormValid} onHandelSubmit={handleSubmit} updateTitle={setTitle} />
         <RoomDescriptionInput description={description} updateDescription={setDescription} />
         <PrivacySelector
           isPrivate={isPrivate}
           updateIsPrivate={setIsPrivate}
           password={password}
+          isFormValid={isFormValid}
+          onHandelSubmit={handleSubmit}
           updatePassword={setPassword}
         />
         <SubmitButton isFormValid={isFormValid} />
