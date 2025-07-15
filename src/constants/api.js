@@ -5,6 +5,7 @@ export const API = {
   POST_ROOM: `${BASE_URL}/room`,
   DELETE_S3_File: `${BASE_URL}/upload/delete-files`,
   updateMessage: (roomId, messageId) => `${BASE_URL}/${roomId}/message/${messageId}`,
+  updateReactions: (roomId, messageId) => `${BASE_URL}/${roomId}/message/${messageId}/reactions`,
   deleteMessage: (roomId, messageId) => `${BASE_URL}/${roomId}/message/${messageId}`,
   getLastMessage: (roomId) => `${BASE_URL}/last-message/${roomId}`,
   uploadFile: (fileType, fileName) => `${BASE_URL}/upload/upload-url?fileType=${fileType}&fileName=${fileName}`,

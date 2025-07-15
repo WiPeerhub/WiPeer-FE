@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatTimestamp } from "@/utils/formatTimestamp";
 import { API } from "@/constants/api";
 import EditMessageMenu from "@/components/Chat/EditMessageMenu";
@@ -10,7 +10,6 @@ export default function ChatRoomMessage(props) {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [reactions, setReactions] = useState({});
   const {
     messageId,
     messageOwnerId,
@@ -19,14 +18,41 @@ export default function ChatRoomMessage(props) {
     username,
     timestamp,
     message,
+    emojis,
     files = [],
     onImageLoad,
     onEditMessageMenuLoad,
   } = props;
+  const [reactions, setReactions] = useState({});
   const [newMessage, setNewMessage] = useState(message);
   const date = new Date(timestamp);
   const formattedTimestamp = formatTimestamp(date);
   const ownerId = localStorage.getItem("ownerId");
+
+  useEffect(() => {
+    if (!reactions || Object.keys(reactions).length === 0) return;
+
+    const updateReactionOnServer = async () => {
+      try {
+        const res = await fetch(API.updateReactions(roomId, messageId), {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reactions,
+          }),
+        });
+
+        const updatedMessage = await res.json();
+        if (!res.ok) {
+          console.error("리액션 업데이트 실패:", updatedMessage.message);
+        }
+      } catch (err) {
+        console.error("리액션 업데이트 중 오류:", err);
+      }
+    };
+
+    updateReactionOnServer();
+  }, [reactions]);
 
   const handleMouseLeave = () => {
     setIsHovered(false);
@@ -108,9 +134,6 @@ export default function ChatRoomMessage(props) {
             setShowEmojiPicker={setShowEmojiPicker}
             updateReactions={setReactions}
             reactions={reactions}
-            roomId={roomId}
-            messageId={messageId}
-            setIsHovered={setIsHovered}
           />
         )}
         {isHovered && ownerId === messageOwnerId && (
@@ -136,9 +159,9 @@ export default function ChatRoomMessage(props) {
           )
         )}
         {type === "mixed" && files.length > 0 && <ShowFileList files={files} onImageLoad={onImageLoad} />}
-        {reactions && Object.keys(reactions).length > 0 && (
+        {emojis && Object.keys(emojis).length > 0 && (
           <ul className="mt-1 flex gap-1">
-            {Object.entries(reactions).map(([emoji, users]) => (
+            {Object.entries(emojis).map(([emoji, users]) => (
               <li
                 key={emoji}
                 className="flex cursor-pointer items-center gap-1 rounded-full border border-blue-300 bg-blue-100 px-2 py-1 text-xs transition-colors hover:bg-blue-200"
