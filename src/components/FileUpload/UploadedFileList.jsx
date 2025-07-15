@@ -1,4 +1,4 @@
-import { X, FileText, ImageIcon } from "lucide-react";
+import { X, FileText, ImageIcon, Video } from "lucide-react";
 
 export default function UploadedFileList({
   updateFileUploadingState,
@@ -28,6 +28,11 @@ export default function UploadedFileList({
     if (fileType.startsWith("image/")) {
       return <ImageIcon className="h-4 w-4 text-blue-500" />;
     }
+
+    if (fileType.startsWith("video/")) {
+      return <Video className="h-4 w-4 text-purple-500" />;
+    }
+
     return <FileText className="h-4 w-4 text-gray-500" />;
   };
 
