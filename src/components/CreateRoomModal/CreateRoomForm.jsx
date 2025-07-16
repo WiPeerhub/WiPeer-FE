@@ -10,7 +10,6 @@ import SubmitButton from "@/components/CreateRoomModal/SubmitButton";
 import CreateRoomHeader from "@/components/CreateRoomModal/CreateRoomHeader";
 import useClientIP from "@/hooks/useClientIP";
 import { incrementRoomCount } from "@/utils/setOrGetNicknameStats";
-import { getCurrentWifiId } from "@/utils/getOrSaveWifiID";
 
 export default function CreateRoomForm() {
   const [title, setTitle] = useState("");
@@ -27,13 +26,12 @@ export default function CreateRoomForm() {
     const ownerId = getOrCreateOwnerId();
 
     const payload = {
-      ip: clientIP,
+      ip: "",
       title,
       description,
       isPrivate,
       password: isPrivate ? password : null,
       ownerId,
-      wifiId: getCurrentWifiId(),
     };
 
     try {

@@ -6,42 +6,24 @@ import useSocket from "@/hooks/useSocket";
 import { useSearchValueStore } from "@/stores/useSearchValueStore";
 import Hangul from "hangul-js";
 import Fuse from "fuse.js";
-import { getUserVisitedRooms } from "@/utils/roomAPI";
+import { useMyRoomStore } from "@/stores/useMyRoomStore";
 
 export default function ChatMyRoomListPage() {
   const rooms = useRoomListStore((state) => state.rooms);
-  const [myVisitedRooms, setMyVisitedRooms] = useState([]);
+  const { myRooms, fetchMyRooms } = useMyRoomStore();
   const bottomRef = useRef(null);
   const searchValue = useSearchValueStore((state) => state.searchValue);
   const clientIP = useClientIP();
 
   useEffect(() => {
-    const fetchMyVisibleRooms = async () => {
+    const fetchMyCreatedRooms = async () => {
       const userId = localStorage.getItem("ownerId");
-      if (!userId || !clientIP) return;
-
-      try {
-        const { rooms: visitedRooms } = await getUserVisitedRooms(userId);
-
-        const visitedRoomIdSet = new Set(visitedRooms.map((r) => r.roomId));
-
-        const filteredVisitedRooms = rooms.filter((room) => visitedRoomIdSet.has(room.roomId));
-        const myCreatedRooms = rooms.filter((room) => room.ownerId === userId);
-
-        const combinedRoomMap = new Map();
-
-        filteredVisitedRooms.forEach((room) => combinedRoomMap.set(room.roomId, room));
-        myCreatedRooms.forEach((room) => combinedRoomMap.set(room.roomId, room));
-
-        const combinedRooms = Array.from(combinedRoomMap.values());
-
-        setMyVisitedRooms(combinedRooms);
-      } catch (err) {
-        console.err("happend", err.message);
+      if (userId && clientIP) {
+        await fetchMyRooms(userId, clientIP);
       }
     };
 
-    fetchMyVisibleRooms();
+    fetchMyCreatedRooms();
   }, [clientIP]);
 
   const decompose = (str) => Hangul.disassemble(str).join("");
@@ -52,14 +34,14 @@ export default function ChatMyRoomListPage() {
   }
   const normalizedRooms = useMemo(
     () =>
-      myVisitedRooms.map((room) => ({
+      myRooms.map((room) => ({
         ...room,
         _title: decompose(room.title || ""),
         _description: decompose(room.description || ""),
         _chosungTitle: extractChosung(room.title || ""),
         _chosungDescription: extractChosung(room.description || ""),
       })),
-    [myVisitedRooms],
+    [myRooms],
   );
 
   const fuse = useMemo(() => {
@@ -73,7 +55,7 @@ export default function ChatMyRoomListPage() {
   const decomposedChosungQuery = extractChosung(searchValue || "");
 
   const filteredRooms = useMemo(() => {
-    if (!searchValue) return myVisitedRooms;
+    if (!searchValue) return myRooms;
 
     if (/^[ㄱ-ㅎ]+$/.test(searchValue)) {
       return normalizedRooms.filter(
@@ -84,7 +66,7 @@ export default function ChatMyRoomListPage() {
     } else {
       return fuse.search(decomposedSearchValue).map((r) => r.item);
     }
-  }, [searchValue, decomposedSearchValue, decomposedChosungQuery, fuse, normalizedRooms, myVisitedRooms]);
+  }, [searchValue, decomposedSearchValue, decomposedChosungQuery, fuse, normalizedRooms, myRooms]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "auto" });

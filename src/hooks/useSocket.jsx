@@ -3,12 +3,14 @@ import { io } from "socket.io-client";
 import { BASE_URL } from "@/constants/api";
 import { useRoomListStore } from "@/stores/useRoomListStore";
 import { createPeerConnection, handleOffer, handleAnswer, handleCandidate } from "@/utils/peerManager";
+import { useMyRoomStore } from "@/stores/useMyRoomStore";
 
 export default function useSocket(roomId, setConversation) {
   const socketRef = useRef(null);
   const peersRef = useRef({});
   const dataChannelsRef = useRef({});
   const setRoomList = useRoomListStore((state) => state.setRoomList);
+  const setMyRooms = useMyRoomStore((state) => state.setMyRooms);
 
   useEffect(() => {
     const socket = io(BASE_URL);
@@ -20,7 +22,12 @@ export default function useSocket(roomId, setConversation) {
     });
 
     socket.on("new-room-created", (roomData) => {
-      setRoomList((prev) => [...prev, roomData]);
+      setMyRooms((prev) => [...prev, roomData]);
+    });
+
+    socket.on("room-ip-updated", (roomData) => {
+      const updatedRoom = roomData.updatedRoom;
+      setRoomList((prev) => [...prev, updatedRoom]);
     });
 
     socket.on("chat-history", (history) => {
@@ -32,7 +39,6 @@ export default function useSocket(roomId, setConversation) {
     });
 
     socket.on("message-updated", (updatedMessage) => {
-      console.log(updatedMessage);
       setConversation((prev) => prev.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg)));
     });
 
@@ -56,6 +62,7 @@ export default function useSocket(roomId, setConversation) {
     });
 
     socket.on("room-deleted", (deletedRoomId) => {
+      setMyRooms((prev) => prev.filter((room) => room.roomId !== deletedRoomId));
       setRoomList((prev) => prev.filter((room) => room.roomId !== deletedRoomId));
     });
 

@@ -18,7 +18,7 @@ const request = async (url, options = {}) => {
   }
 };
 
-export const createRoom = async ({ ip, title, description, password, isPrivate, ownerId, wifiId }) => {
+export const createRoom = async ({ ip, title, description, password, isPrivate, ownerId }) => {
   return request(BASE_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -28,7 +28,6 @@ export const createRoom = async ({ ip, title, description, password, isPrivate, 
       password,
       isPrivate,
       ownerId,
-      wifiId,
     }),
   });
 };
@@ -48,11 +47,11 @@ export const getRoomDetail = async (ownerId, roomId) => {
   return request(url);
 };
 
-export const updateRoomIP = async ({ ownerId, roomId, ip, userId }) => {
+export const updateRoomIP = async ({ ownerId, roomId, ip }) => {
   const url = `${BASE_URL}/${ownerId}/${roomId}/ip`;
   return request(url, {
     method: "PATCH",
-    body: JSON.stringify({ ip, userId }),
+    body: JSON.stringify({ ip }),
   });
 };
 
@@ -73,5 +72,10 @@ export const deleteRoom = async ({ ownerId, roomId }) => {
 
 export const getRoomByRoomId = async (roomId) => {
   const url = `${BASE_URL}/id/${roomId}`;
+  return request(url);
+};
+
+export const getRoomsByOwner = async (ownerId) => {
+  const url = `${BASE_URL}/owner/${ownerId}`;
   return request(url);
 };

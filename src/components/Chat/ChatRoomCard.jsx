@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Lock, Users, Clock, Trash2 } from "lucide-react";
 import { API } from "@/constants/api";
 import { deleteRoom } from "@/utils/roomAPI";
@@ -8,6 +8,8 @@ import PasswordModal from "@/components/PasswordConfirmModal/PasswordModal";
 import RoomDeleteModal from "@/components/RoomDeleteModal/RoomDeleteModal";
 import { formatTimestamp } from "@/utils/formatTimestamp";
 import { decrementRoomCount } from "@/utils/setOrGetNicknameStats";
+import useClientIP from "@/hooks/useClientIP";
+import { updateRoomIP } from "@/utils/roomAPI";
 
 export default function ChatRoomCard(props) {
   const { isPrivate, roomId, name, description, password, roomOwnerId } = props;
@@ -18,6 +20,9 @@ export default function ChatRoomCard(props) {
   const [roomDeleteModalOpen, setRoomDeleteModalOpen] = useState(false);
   const nickName = localStorage.getItem("nickName");
   const ownerId = getOrCreateOwnerId();
+  const clientIP = useClientIP();
+  const location = useLocation();
+  const currentPath = location.pathname;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,6 +75,16 @@ export default function ChatRoomCard(props) {
     }
   };
 
+  const handleRoomShare = async (e) => {
+    e.stopPropagation();
+
+    try {
+      await updateRoomIP({ ownerId, roomId, ip: clientIP });
+    } catch (err) {
+      console.error("방 공유 실패", err.message);
+    }
+  };
+
   return (
     <>
       <li className="group flex cursor-pointer items-center justify-between rounded-lg p-3 transition-colors hover:bg-gray-50">
@@ -87,6 +102,14 @@ export default function ChatRoomCard(props) {
             <h3 className="truncate font-medium text-gray-900">{name}</h3>
             {description && <p className="truncate text-sm text-gray-500">{description}</p>}
           </div>
+          {currentPath === "/MyChatRoomListLayout" && (
+            <div className="flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-green-600 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-green-50">
+              <button onClick={handleRoomShare} className="cursor-pointer">
+                공유
+              </button>
+            </div>
+          )}
+
           {ownerId === roomOwnerId && (
             <button
               onClick={(e) => {

@@ -6,8 +6,6 @@ import useSocket from "@/hooks/useSocket";
 import { useSearchValueStore } from "@/stores/useSearchValueStore";
 import Hangul from "hangul-js";
 import Fuse from "fuse.js";
-import { getUserVisitedRooms, updateRoomIP } from "@/utils/roomAPI";
-import { getWifiMap } from "@/utils/getOrSaveWifiID";
 
 export default function ChatRoomListPage() {
   const { rooms, fetchRooms } = useRoomListStore();
@@ -15,52 +13,13 @@ export default function ChatRoomListPage() {
   const searchValue = useSearchValueStore((state) => state.searchValue);
   const clientIP = useClientIP();
 
-  useEffect(() => {
-    const syncVisitedRoomsIP = async () => {
-      const userId = localStorage.getItem("ownerId");
-      const wifiMap = getWifiMap();
-      if (!userId || !clientIP || !wifiMap) return;
-
-      try {
-        const { rooms } = await getUserVisitedRooms(userId);
-
-        let ipChanged = false;
-
-        for (const room of rooms) {
-          const isSameWifi = wifiMap[room.wifiId] !== undefined;
-          const isDifferentIP = room.ip !== clientIP;
-
-          if (isSameWifi && isDifferentIP) {
-            console.log(`[IP 갱신 조건 충족] ${room.title}`);
-            await updateRoomIP({
-              ownerId: room.ownerId,
-              roomId: room.roomId,
-              ip: clientIP,
-              userId,
-            });
-
-            ipChanged = true;
-            console.log(`[IP 변경됨] ${room.title}: ${room.ip} → ${clientIP}`);
-          }
-        }
-
-        if (ipChanged) {
-          fetchRooms(clientIP);
-        }
-      } catch (err) {
-        console.error("방 IP 동기화 실패:", err.message);
-      }
-    };
-
-    syncVisitedRoomsIP();
-  }, [clientIP]);
-
   const decompose = (str) => Hangul.disassemble(str).join("");
   function extractChosung(str) {
     return Hangul.disassemble(str)
       .filter((char) => "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ".includes(char))
       .join("");
   }
+
   const normalizedRooms = useMemo(
     () =>
       rooms.map((room) => ({
