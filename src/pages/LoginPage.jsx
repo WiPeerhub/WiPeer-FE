@@ -2,15 +2,25 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { FcGoogle } from "react-icons/fc";
 import { DoorOpen } from "lucide-react";
+import useClientIP from "@/hooks/useClientIP";
+import { saveWifiIdToLocalStorage } from "@/utils/getOrSaveWifiID";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const clientIP = useClientIP();
 
   const handleGoogleLogin = () => {
+    if (clientIP) {
+      saveWifiIdToLocalStorage(clientIP);
+    }
+
     window.location.href = import.meta.env.VITE_GOOGLE_OAUTH_CALLBACK_URL;
   };
 
   const handleGuestLogin = () => {
+    if (clientIP) {
+      saveWifiIdToLocalStorage(clientIP);
+    }
     const id = uuidv4();
     localStorage.setItem("ownerId", id);
     navigate("/main");

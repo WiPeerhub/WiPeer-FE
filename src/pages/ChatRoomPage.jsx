@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import useSocket from "@/hooks/useSocket";
 import { uploadCompressedFileToS3 } from "@/utils/uploadCompressedFileToS3";
 import { incrementMessageCount } from "@/utils/setOrGetNicknameStats";
+import { recordRoomVisit, getRoomByRoomId } from "@/utils/roomAPI";
 
 export default function ChatRoomPage() {
   const [conversation, setConversation] = useState([]);
@@ -33,6 +34,30 @@ export default function ChatRoomPage() {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [conversation]);
+
+  useEffect(() => {
+    const initRoomVisit = async () => {
+      const userId = localStorage.getItem("ownerId");
+
+      if (!userId || !roomId) return;
+
+      try {
+        const { room } = await getRoomByRoomId(roomId);
+        console.log(room);
+        if (!room || !room.ownerId) return;
+
+        await recordRoomVisit({
+          ownerId: room.ownerId,
+          roomId,
+          userId,
+        });
+      } catch (error) {
+        console.error("방 입장 기록 실패:", error.message);
+      }
+    };
+
+    initRoomVisit();
+  }, [roomId]);
 
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
