@@ -1,12 +1,11 @@
 import { create } from "zustand";
-import { API } from "@/constants/api";
+import { getRoomsByIP } from "@/utils/roomAPI";
 
 export const useRoomListStore = create((set) => ({
   rooms: [],
   fetchRooms: async (ip) => {
-    const res = await fetch(API.getRoomsByIP(ip));
-    const roomsInfo = await res.json();
-    set({ rooms: roomsInfo.rooms });
+    const { rooms } = await getRoomsByIP(ip);
+    set({ rooms });
   },
   setRoomList: (updater) =>
     set((state) => ({

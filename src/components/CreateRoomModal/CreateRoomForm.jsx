@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRoomCreationStore } from "@/stores/useRoomCreationStore";
 import { useRoomListStore } from "@/stores/useRoomListStore";
-import { API } from "@/constants/api";
+import { createRoom } from "@/utils/roomAPI";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import TitleInput from "@/components/CreateRoomModal/TitleInput";
 import RoomDescriptionInput from "@/components/CreateRoomModal/RoomDescriptionInput";
@@ -10,6 +10,7 @@ import SubmitButton from "@/components/CreateRoomModal/SubmitButton";
 import CreateRoomHeader from "@/components/CreateRoomModal/CreateRoomHeader";
 import useClientIP from "@/hooks/useClientIP";
 import { incrementRoomCount } from "@/utils/setOrGetNicknameStats";
+import { getCurrentWifiId } from "@/utils/getOrSaveWifiID";
 
 export default function CreateRoomForm() {
   const [title, setTitle] = useState("");
@@ -32,14 +33,11 @@ export default function CreateRoomForm() {
       isPrivate,
       password: isPrivate ? password : null,
       ownerId,
+      wifiId: getCurrentWifiId(),
     };
 
     try {
-      const res = await fetch(API.POST_ROOM, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await createRoom(payload);
 
       const result = await res.json();
       await fetchRooms(clientIP);

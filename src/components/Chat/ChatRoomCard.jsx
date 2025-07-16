@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, Users, Clock, Trash2 } from "lucide-react";
 import { API } from "@/constants/api";
+import { deleteRoom } from "@/utils/roomAPI";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import PasswordModal from "@/components/PasswordConfirmModal/PasswordModal";
 import RoomDeleteModal from "@/components/RoomDeleteModal/RoomDeleteModal";
@@ -52,13 +53,7 @@ export default function ChatRoomCard(props) {
 
   const handleDeleteRoom = async () => {
     try {
-      await fetch(API.deleteRoom(roomId), {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ownerId }),
-      });
+      await deleteRoom({ ownerId, roomId });
 
       decrementRoomCount(nickName);
     } catch (err) {

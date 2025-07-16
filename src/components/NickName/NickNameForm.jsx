@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import { setNickNameStat } from "@/utils/setOrGetNicknameStats";
-import { useState } from "react";
 
 export default function NickNameForm() {
   const [nickName, setNickName] = useState("");
