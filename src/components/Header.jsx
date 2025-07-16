@@ -11,13 +11,15 @@ export default function Header() {
     const currentPath = location.pathname;
 
     if (currentPath === "/chatRoomList") {
-      return;
+      if (document.referrer && !document.referrer.endsWith("/")) {
+        navigate(-1);
+      }
     } else if (currentPath.startsWith("/room")) {
-      navigate("/chatRoomList");
+      navigate(-1);
     } else if (currentPath === "/MyChatRoomListLayout") {
-      navigate("/chatRoomList");
-    } else {
-      return;
+      if (document.referrer && !document.referrer.endsWith("/")) {
+        navigate(-1);
+      }
     }
   };
 
