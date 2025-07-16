@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { formatTimestamp } from "@/utils/formatTimestamp";
 import { API } from "@/constants/api";
 import EditMessageMenu from "@/components/Chat/EditMessageMenu";
@@ -7,6 +7,7 @@ import UpdateMessage from "@/components/Chat/UpdateMessage";
 import SelectEmoji from "@/components/Chat/SelectEmoji";
 
 export default function ChatRoomMessage(props) {
+  const EditedmessageRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -28,6 +29,12 @@ export default function ChatRoomMessage(props) {
   const date = new Date(timestamp);
   const formattedTimestamp = formatTimestamp(date);
   const ownerId = localStorage.getItem("ownerId");
+
+  useEffect(() => {
+    if (isEditing && EditedmessageRef.current) {
+      EditedmessageRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [isEditing]);
 
   useEffect(() => {
     if (!reactions || Object.keys(reactions).length === 0) return;
@@ -147,6 +154,7 @@ export default function ChatRoomMessage(props) {
         </div>
         {isEditing ? (
           <UpdateMessage
+            updatedMessageRef={EditedmessageRef}
             newMessage={newMessage}
             updateMessage={setNewMessage}
             handleUpdateMessage={handleUpdateMessage}
