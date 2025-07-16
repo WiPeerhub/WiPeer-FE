@@ -4,6 +4,7 @@ import { BASE_URL } from "@/constants/api";
 import { useRoomListStore } from "@/stores/useRoomListStore";
 import { createPeerConnection, handleOffer, handleAnswer, handleCandidate } from "@/utils/peerManager";
 import { useMyRoomStore } from "@/stores/useMyRoomStore";
+import { getOrCreateOwnerId } from "./../utils/getOrCreateOwnerId";
 
 export default function useSocket(roomId, setConversation) {
   const socketRef = useRef(null);
@@ -11,6 +12,7 @@ export default function useSocket(roomId, setConversation) {
   const dataChannelsRef = useRef({});
   const setRoomList = useRoomListStore((state) => state.setRoomList);
   const setMyRooms = useMyRoomStore((state) => state.setMyRooms);
+  const ownerId = getOrCreateOwnerId();
 
   useEffect(() => {
     const socket = io(BASE_URL);
@@ -22,6 +24,7 @@ export default function useSocket(roomId, setConversation) {
     });
 
     socket.on("new-room-created", (roomData) => {
+      if (ownerId !== roomData.ownerId) return;
       setMyRooms((prev) => [...prev, roomData]);
     });
 
