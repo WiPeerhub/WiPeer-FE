@@ -11,10 +11,10 @@ export default function Header() {
     const currentPath = location.pathname;
 
     if (currentPath === "/chatRoomList") {
-      navigate("/");
+      return;
     } else if (currentPath.startsWith("/room")) {
       navigate("/chatRoomList");
-    } else if (currentPath === "/myActivity") {
+    } else if (currentPath === "/MyChatRoomListLayout") {
       navigate("/chatRoomList");
     } else {
       return;
@@ -22,7 +22,7 @@ export default function Header() {
   };
 
   return (
-    <div className="h-[60px] w-full border-b border-gray-200 bg-white shadow-sm">
+    <div className="relative z-10 h-[60px] w-full border-b border-gray-200 bg-white shadow-sm">
       <div className="flex h-full items-center justify-center px-4">
         <button
           onClick={goBack}
