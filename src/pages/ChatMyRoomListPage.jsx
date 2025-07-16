@@ -24,9 +24,18 @@ export default function ChatMyRoomListPage() {
         const { rooms: visitedRooms } = await getUserVisitedRooms(userId);
 
         const visitedRoomIdSet = new Set(visitedRooms.map((r) => r.roomId));
-        const filtered = rooms.filter((room) => visitedRoomIdSet.has(room.roomId));
-        console.log(filtered);
-        setMyVisitedRooms(filtered);
+
+        const filteredVisitedRooms = rooms.filter((room) => visitedRoomIdSet.has(room.roomId));
+        const myCreatedRooms = rooms.filter((room) => room.ownerId === userId);
+
+        const combinedRoomMap = new Map();
+
+        filteredVisitedRooms.forEach((room) => combinedRoomMap.set(room.roomId, room));
+        myCreatedRooms.forEach((room) => combinedRoomMap.set(room.roomId, room));
+
+        const combinedRooms = Array.from(combinedRoomMap.values());
+
+        setMyVisitedRooms(combinedRooms);
       } catch (err) {
         console.err("happend", err.message);
       }
@@ -86,18 +95,20 @@ export default function ChatMyRoomListPage() {
   return (
     <>
       <ul>
-        {filteredRooms.map((room) => (
-          <ChatRoomCard
-            key={room.roomId}
-            isPrivate={room.isPrivate}
-            roomId={room.roomId}
-            name={room.title}
-            description={room.description}
-            timestamp={room.timestamp}
-            password={room.password}
-            roomOwnerId={room.ownerId}
-          />
-        ))}
+        {filteredRooms
+          .sort((a, b) => a.title.localeCompare(b.title, "ko"))
+          .map((room) => (
+            <ChatRoomCard
+              key={room.roomId}
+              isPrivate={room.isPrivate}
+              roomId={room.roomId}
+              name={room.title}
+              description={room.description}
+              timestamp={room.timestamp}
+              password={room.password}
+              roomOwnerId={room.ownerId}
+            />
+          ))}
       </ul>
       <div ref={bottomRef} />
     </>
