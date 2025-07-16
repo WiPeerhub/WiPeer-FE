@@ -112,18 +112,20 @@ export default function ChatRoomListPage() {
   return (
     <>
       <ul>
-        {filteredRooms.map((room) => (
-          <ChatRoomCard
-            key={room.roomId}
-            isPrivate={room.isPrivate}
-            roomId={room.roomId}
-            name={room.title}
-            description={room.description}
-            timestamp={room.timestamp}
-            password={room.password}
-            roomOwnerId={room.ownerId}
-          />
-        ))}
+        {filteredRooms
+          .sort((a, b) => a.title.localeCompare(b.title, "ko"))
+          .map((room) => (
+            <ChatRoomCard
+              key={room.roomId}
+              isPrivate={room.isPrivate}
+              roomId={room.roomId}
+              name={room.title}
+              description={room.description}
+              timestamp={room.timestamp}
+              password={room.password}
+              roomOwnerId={room.ownerId}
+            />
+          ))}
       </ul>
       <div ref={bottomRef} />
     </>
