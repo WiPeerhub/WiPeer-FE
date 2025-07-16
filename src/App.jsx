@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import ChatRoomListLayout from "@/layout/ChatRoomListLayout";
 import ChatRoomPageLayout from "@/layout/ChatRoomPageLayout";
+import ChatMyRoomListLayout from "@/layout/ChatMyRoomListLayout";
 import NickNamePage from "@/pages/NickNamePage";
-import MyActivityLayout from "@/layout/MyActivityLayout";
 import LoginPage from "@/pages/LoginPage";
 import OAuthCallback from "@/pages/OAuthCallback";
 import useClientIP from "@/hooks/useClientIP";
@@ -23,7 +23,7 @@ export default function App() {
         <Route path="/main" element={<NickNamePage />} />
         <Route path="/room/:roomId" element={<ChatRoomPageLayout />} />
         <Route path="/chatRoomList" element={<ChatRoomListLayout />} />
-        <Route path="/myActivity" element={<MyActivityLayout />} />
+        <Route path="/MyChatRoomListLayout" element={<ChatMyRoomListLayout />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
       </Routes>
