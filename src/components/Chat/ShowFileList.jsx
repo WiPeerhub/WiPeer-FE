@@ -32,10 +32,7 @@ export default function ShowFileList({ files, onImageLoad }) {
                 download={file.fileName}
                 rel="noopener noreferrer"
                 className="mt-1 flex items-center gap-1 text-sm text-black hover:underline"
-              >
-                <Download className="h-4 w-4" />
-                다운로드
-              </a>
+              ></a>
             </div>
           );
         }
