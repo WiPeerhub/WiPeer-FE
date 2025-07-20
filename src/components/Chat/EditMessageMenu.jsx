@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MoreVertical, Edit, Trash2 } from "lucide-react";
 
-export default function EditMessage({ onEdit, onDelete }) {
+export default function EditMessage({ setShowEmojiPicker, onEdit, onDelete }) {
   const [isEditOrRemoveModal, setIsEditOrRemoveModal] = useState(false);
   const menuRef = useRef(null);
 
@@ -21,6 +21,7 @@ export default function EditMessage({ onEdit, onDelete }) {
         <button
           onClick={() => {
             setIsEditOrRemoveModal(!isEditOrRemoveModal);
+            setShowEmojiPicker(false);
           }}
           className="rounded-md p-2 transition-colors hover:bg-gray-100"
         >

@@ -23,6 +23,7 @@ export default function ChatRoomMessage(props) {
     files = [],
     onImageLoad,
     onEditMessageMenuLoad,
+    updatePreventAutoScroll,
   } = props;
   const [reactions, setReactions] = useState({});
   const [newMessage, setNewMessage] = useState(message);
@@ -63,6 +64,7 @@ export default function ChatRoomMessage(props) {
 
   const handleMouseLeave = () => {
     setIsHovered(false);
+    setShowEmojiPicker(false);
   };
 
   const handleUpdateMessage = async () => {
@@ -141,10 +143,16 @@ export default function ChatRoomMessage(props) {
             setShowEmojiPicker={setShowEmojiPicker}
             updateReactions={setReactions}
             reactions={reactions}
+            onPreventAutoScroll={() => updatePreventAutoScroll(true)}
+            onShowEmojis={() => setShowEmojiPicker(false)}
           />
         )}
         {isHovered && ownerId === messageOwnerId && (
-          <EditMessageMenu onEdit={() => setIsEditing(true)} onDelete={handleDeleteMessage} />
+          <EditMessageMenu
+            setShowEmojiPicker={setShowEmojiPicker}
+            onEdit={() => setIsEditing(true)}
+            onDelete={handleDeleteMessage}
+          />
         )}
       </div>
       <div className="flex-1 p-2">

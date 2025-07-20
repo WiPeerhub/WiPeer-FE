@@ -12,6 +12,7 @@ import { recordRoomVisit, getRoomByRoomId } from "@/utils/roomAPI";
 
 export default function ChatRoomPage() {
   const [conversation, setConversation] = useState([]);
+  const [preventAutoScroll, setPreventAutoScroll] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isFileUploading, setIsFileUpLoading] = useState(false);
@@ -26,6 +27,11 @@ export default function ChatRoomPage() {
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
+
+    if (preventAutoScroll) {
+      setPreventAutoScroll(false);
+      return;
+    }
 
     if (isFirstRender.current && conversation.length > 0) {
       bottomRef.current?.scrollIntoView({ behavior: "auto" });
@@ -144,6 +150,7 @@ export default function ChatRoomPage() {
             files={message.files}
             onImageLoad={handleImageLoad}
             onEditMessageMenuLoad={handleImageLoad}
+            updatePreventAutoScroll={setPreventAutoScroll}
           />
         ))}
         <div ref={bottomRef} />

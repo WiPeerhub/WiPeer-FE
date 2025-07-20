@@ -1,11 +1,18 @@
 import { Smile } from "lucide-react";
 import { EMOJI_LIST } from "@/constants/emojiList";
 
-export default function SelectEmoji({ showEmojiPicker, setShowEmojiPicker, updateReactions }) {
+export default function SelectEmoji({
+  showEmojiPicker,
+  setShowEmojiPicker,
+  updateReactions,
+  onPreventAutoScroll,
+  onShowEmojis,
+}) {
   const ownerId = localStorage.getItem("ownerId");
 
   const handleSelectEmoji = (emoji) => {
-    setShowEmojiPicker(false);
+    onPreventAutoScroll();
+    onShowEmojis();
 
     updateReactions((prev) => {
       const users = prev[emoji] || [];
@@ -39,7 +46,7 @@ export default function SelectEmoji({ showEmojiPicker, setShowEmojiPicker, updat
           <Smile className="h-3 w-3 text-gray-500" />
         </button>
         {showEmojiPicker && (
-          <div className="absolute top-6.5 right-0 z-10 mt-1 rounded-lg border border-gray-200 bg-white p-2 shadow-lg">
+          <div className="absolute top-0 right-0 z-10 rounded-lg border border-gray-200 bg-white p-2 shadow-lg">
             <div className="flex gap-1">
               {EMOJI_LIST.map((emoji) => (
                 <button
