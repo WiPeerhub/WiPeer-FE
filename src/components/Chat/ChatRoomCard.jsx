@@ -103,7 +103,7 @@ export default function ChatRoomCard(props) {
             {description && <p className="truncate text-sm text-gray-500">{description}</p>}
           </div>
           {currentPath === "/MyChatRoomListLayout" && (
-            <div className="flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-green-600 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-green-50">
+            <div className="flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-green-600">
               <button onClick={handleRoomShare} className="cursor-pointer">
                 공유
               </button>
