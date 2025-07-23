@@ -34,10 +34,7 @@ export default function UpdateMessage({
             저장
           </button>
           <button
-            onClick={() => {
-              handleUpdateMessage();
-              setIsEditing(false);
-            }}
+            onClick={() => setIsEditing(false)}
             className="rounded-md bg-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-300"
           >
             취소
