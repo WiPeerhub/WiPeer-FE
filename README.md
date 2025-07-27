@@ -47,8 +47,9 @@
     <img src="https://img.shields.io/badge/javascript-ECDC5A?style=for-the-badge&logo=javascript&logoColor=black">
     <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
     <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=Vite&logoColor=white" />
-    <img src="https://img.shields.io/badge/Tailwind CSS-06B6D4?style=for-the-badge&logo=Tailwind CSS&logoColor=white"/>
-        <img src="https://img.shields.io/badge/%20ZUSTAND-FF7B00?style=for-the-badge&logo=ZUSTAND%20EC2&logoColor=white">
+<img src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+    <img src="https://img.shields.io/badge/%20ZUSTAND-FF7B00?style=for-the-badge&logo=ZUSTAND%20EC2&logoColor=white">
+
   <br>
 
   <h3>Server</h3>
@@ -84,7 +85,7 @@
 
 ## 1. 채팅방 생성 및 공유
 
-<div align="center">
+<div align="center" style="height: 530px">
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%82%B4+%EC%B1%84%ED%8C%85%EB%B0%A9.jpg" width="300px" height="530px" style="object-fit: cover"/>
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85%EB%B0%A9%EB%AA%A9%EB%A1%9D.jpg" width="300px" height="530px" style="object-fit: cover"/>
 </div>
@@ -97,7 +98,7 @@
 
 ## 2. 채팅 편집 및 삭제 기능
 
-<div align="center">
+<div align="center" style="height: 530px">
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A9%94%EC%8B%9C%EC%A7%80%ED%8E%B8%EC%A7%91%EC%82%AD%EC%A0%9C.jpg" width="300px" height="530px" style="object-fit: cover"/>
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A9%94%EC%8B%9C%EC%A7%80%ED%8E%B8%EC%A7%91.jpg" width="300px" height="530px" style="object-fit: cover" />
 </div>
@@ -108,7 +109,7 @@
 
 ## 3. 파일 업로드 기능
 
-<div align="center">
+<div align="center" style="height: 530px">
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%82%AC%EC%A7%84+%EC%97%85%EB%A1%9C%EB%93%9C.jpg" width="300px" height="530px" style="object-fit: cover"/>
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%82%AC%EC%A7%84+%EC%97%85%EB%A1%9C%EB%93%9C+%EA%B2%B0%EA%B3%BC.jpg" width="300px" height="530px" style="object-fit: cover"/>
 </div>
@@ -122,7 +123,7 @@
 
 ## 4. 채팅방 검색 기능
 
-<div align="center">
+<div align="center" style="height: 530px">
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B4%88%EC%84%B1%EA%B2%80%EC%83%89.jpg" width="300px" height="530px" style="object-fit: cover" />
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%98%A4%ED%83%80%EA%B2%80%EC%83%89.jpg" width="300px" height="530px" style="object-fit: cover" />
 </div>
