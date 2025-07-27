@@ -85,8 +85,8 @@
 ## 1. 채팅방 생성 및 공유
 
 <div align="center">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%82%B4+%EC%B1%84%ED%8C%85%EB%B0%A9.jpg" width="300px" height="530px"/>
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85%EB%B0%A9%EB%AA%A9%EB%A1%9D.jpg" width="300px" height="530px"/>
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%82%B4+%EC%B1%84%ED%8C%85%EB%B0%A9.jpg" width="300px" height="530px" style="object-fit: cover"/>
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85%EB%B0%A9%EB%AA%A9%EB%A1%9D.jpg" width="300px" height="530px" style="object-fit: cover"/>
 </div>
 
 - 사용자는 "내 채팅방" 페이지에서 + 버튼을 클릭 후 자유롭게 채팅방 생성이 가능합니다.
@@ -98,8 +98,8 @@
 ## 2. 채팅 편집 및 삭제 기능
 
 <div align="center">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A9%94%EC%8B%9C%EC%A7%80%ED%8E%B8%EC%A7%91%EC%82%AD%EC%A0%9C.jpg" width="300px" height="530px"/>
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A9%94%EC%8B%9C%EC%A7%80%ED%8E%B8%EC%A7%91.jpg" width="300px" height="530px" />
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A9%94%EC%8B%9C%EC%A7%80%ED%8E%B8%EC%A7%91%EC%82%AD%EC%A0%9C.jpg" width="300px" height="530px" style="object-fit: cover"/>
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A9%94%EC%8B%9C%EC%A7%80%ED%8E%B8%EC%A7%91.jpg" width="300px" height="530px" style="object-fit: cover" />
 </div>
 
 - 사용자는 채팅란에 마우스를 hover한 이후 오른쪽 상단의 옵션 메뉴를 선택하면 자신이 작성한 채팅을 편집하고 삭제할 수 있습니다.
@@ -109,8 +109,8 @@
 ## 3. 파일 업로드 기능
 
 <div align="center">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%82%AC%EC%A7%84+%EC%97%85%EB%A1%9C%EB%93%9C.jpg" width="300px" height="530px"/>
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%82%AC%EC%A7%84+%EC%97%85%EB%A1%9C%EB%93%9C+%EA%B2%B0%EA%B3%BC.jpg" width="300px" height="530px"/>
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%82%AC%EC%A7%84+%EC%97%85%EB%A1%9C%EB%93%9C.jpg" width="300px" height="530px" style="object-fit: cover"/>
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%82%AC%EC%A7%84+%EC%97%85%EB%A1%9C%EB%93%9C+%EA%B2%B0%EA%B3%BC.jpg" width="300px" height="530px" style="object-fit: cover"/>
 </div>
 
 - 사용자는 채팅 입력창 아래의 파일 업로드 버튼을 통해 파일을 첨부할 수 있습니다.
@@ -123,8 +123,8 @@
 ## 4. 채팅방 검색 기능
 
 <div align="center">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B4%88%EC%84%B1%EA%B2%80%EC%83%89.jpg" width="300px" height="530px" />
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%98%A4%ED%83%80%EA%B2%80%EC%83%89.jpg" width="300px" height="530px" />
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B4%88%EC%84%B1%EA%B2%80%EC%83%89.jpg" width="300px" height="530px" style="object-fit: cover" />
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%98%A4%ED%83%80%EA%B2%80%EC%83%89.jpg" width="300px" height="530px" style="object-fit: cover" />
 </div>
 <br>
 
@@ -270,13 +270,6 @@ socket.on("join-room", async (roomId) => {
 4. 연결 성립 후 DataChannel 생성
    RTCPeerConnection이 완료되면, DataChannel을 통해 실시간 메시지를 주고받을 수 있는 통로가 열립니다. 이후의 메시지는 WebSocket을 거치지 않고 P2P 방식으로 바로 전달됩니다.
 
-### 2.2 파일 전송 시 Latency 성능 측정
-
-WebRTC 도입의 주요 목적 중 하나는 파일 전송 시에 Latency를 최소화하는 것이었습니다.
-이 기능을 구현함에 있어 실제 WebRTC DataChannel과 WeboSocket 방식이 얼마만큼의 차이가 있는지 검증 과정ㅇ
-
-<테스트 시나리오>
-
 ## 3. 채팅방 검색시 초성 검색 및 오타 허용
 
 사용자가 채팅방 목록에서 특정 방을 검색할 때, 단순 문자열의 일치 여부만으로는 원하는 방을 찾기 어려울 수 있다고 생각하였습니다.
@@ -407,7 +400,6 @@ matrix는 (6+1)x(5+1) 크기(7x6) 2차원 배열로 초기화됩니다.
 | ----- | ----- | ------ | ------ | ---------- | ------------------------------------------------------------- | -------------------- |
 | 1     | 1     | ㅇ     | ㅇ     | 0          | 대각선 유지                                                   | matrix[0][0] + 0 = 0 |
 | 2     | 1     | ㅁ     | ㅇ     | 1          | 삭제(이전행)+1, 삽입(이전열)+1, 교체(대각선)+1 중 최소값 선택 | 등등 계산 진행       |
-| ...   | ...   | ...    | ...    | ...        | ...                                                           | ...                  |
 
 3. 실제 필요한 편집 작업
 
