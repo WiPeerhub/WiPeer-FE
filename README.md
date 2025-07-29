@@ -112,7 +112,7 @@
 
 <div align="center" style="height: 530px">
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%82%AC%EC%A7%84+%EC%97%85%EB%A1%9C%EB%93%9C.jpg"
-  width="305px"
+  width="304px"
   style="object-fit: cover"/>
   <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%82%AC%EC%A7%84+%EC%97%85%EB%A1%9C%EB%93%9C+%EA%B2%B0%EA%B3%BC+1.jpg" width="305px" style="object-fit: cover"/>
 </div>
