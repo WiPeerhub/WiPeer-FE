@@ -44,14 +44,14 @@
 ## 💻 로그인 및 채팅방 목록 페이지 이동
 
 <div align="center" style="height: 530px">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A1%9C%EA%B7%B8%EC%9D%B8%26%EB%8B%89%EB%84%A4%EC%9E%84%EC%9E%85%EB%A0%A5.gif" width="500px" />
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A1%9C%EA%B7%B8%EC%9D%B8%26%EB%8B%89%EB%84%A4%EC%9E%84%EC%9E%85%EB%A0%A5.gif" width="520px" />
 </div>
 <br>
 
 ## 🧑‍💻 채팅방 생성 및 공유
 
 <div align="center" style="height: 530px">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%B0%A9%EC%83%9D%EC%84%B1%EB%B0%8F%EA%B3%B5%EC%9C%A0.gif" width="500px" />
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%B0%A9%EC%83%9D%EC%84%B1%EB%B0%8F%EA%B3%B5%EC%9C%A0.gif" width="520px" />
 </div>
 <br>
 <br>
@@ -59,7 +59,7 @@
 ## 👨‍👩‍👧‍👧 채팅방 입장 및 실시간 채팅
 
 <div align="center" style="height: 530px">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85%EB%B0%A9%EC%9E%85%EC%9E%A5%EB%B0%8F%EC%B1%84%ED%8C%85%EC%8B%9C%EC%9E%91.gif" width="500px" />
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85%EB%B0%A9%EC%9E%85%EC%9E%A5%EB%B0%8F%EC%B1%84%ED%8C%85%EC%8B%9C%EC%9E%91.gif" width="520px" />
 </div>
 <br>
 <br>
