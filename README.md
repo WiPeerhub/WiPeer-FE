@@ -29,10 +29,13 @@
     - [1.2 사용자 입장부터 채팅방 공유까지](#12-사용자-입장부터-채팅방-입장까지)
   - [2. WebRTC를 활용한 Latency 최적화](#2-webrtc를-활용한-latency-최적화)
     - [2.1 WebRTC Mesh 환경 구축](#21-webrtc-mesh-환경-구축)
+    - [2.3 AWS ElastiCache for Redis를 이용한 브로드캐스트 중앙화](#23-aws-elasticache-for-redis를-이용한-브로드캐스트-중앙화)
+    - [2.2 Redis Pub/Sub 기반 채팅 메시지 중계 시스템](#22-redis-pubsub-기반-채팅-메시지-중계-시스템)
   - [3. 채팅방 검색시 초성 검색 및 오타 허용](#3-채팅방-검색시-초성-검색-및-오타-허용)
     - [3.1 한글 유니코드 조합 규칙을 활용한 초성 검색](#31-한글-유니코드-조합-규칙을-활용한-초성-검색)
     - [3.2 levenshtein 알고리즘을 활용한 유사도 검사](#32-levenshtein-알고리즘을-활용한-유사도-검사)
 - [🗓️ 기간](#️-기간)
+- [📝 회고](#-회고)
 
 <br>
 
@@ -41,14 +44,14 @@
 ## 💻 로그인 및 채팅방 목록 페이지 이동
 
 <div align="center" style="height: 530px">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A1%9C%EA%B7%B8%EC%9D%B8%26%EB%8B%89%EB%84%A4%EC%9E%84%EC%9E%85%EB%A0%A5.gif" />
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A1%9C%EA%B7%B8%EC%9D%B8%26%EB%8B%89%EB%84%A4%EC%9E%84%EC%9E%85%EB%A0%A5.gif" width="500px" />
 </div>
 <br>
 
 ## 🧑‍💻 채팅방 생성 및 공유
 
 <div align="center" style="height: 530px">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%B0%A9%EC%83%9D%EC%84%B1%EB%B0%8F%EA%B3%B5%EC%9C%A0.gif" />
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%B0%A9%EC%83%9D%EC%84%B1%EB%B0%8F%EA%B3%B5%EC%9C%A0.gif" width="500px" />
 </div>
 <br>
 <br>
@@ -56,7 +59,7 @@
 ## 👨‍👩‍👧‍👧 채팅방 입장 및 실시간 채팅
 
 <div align="center" style="height: 530px">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85%EB%B0%A9%EC%9E%85%EC%9E%A5%EB%B0%8F%EC%B1%84%ED%8C%85%EC%8B%9C%EC%9E%91.gif" />
+  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85%EB%B0%A9%EC%9E%85%EC%9E%A5%EB%B0%8F%EC%B1%84%ED%8C%85%EC%8B%9C%EC%9E%91.gif" width="500px" />
 </div>
 <br>
 <br>
@@ -294,6 +297,46 @@ socket.on("join-room", async (roomId) => {
 
 4. 연결 성립 후 DataChannel 생성
    RTCPeerConnection이 완료되면, DataChannel을 통해 실시간 메시지를 주고받을 수 있는 통로가 열립니다. 이후의 메시지는 WebSocket을 거치지 않고 P2P 방식으로 바로 전달됩니다.
+
+### 2.2 Redis Pub/Sub 기반 채팅 메시지 중계 시스템
+
+기존에는 하나의 EC2 인스턴스를 WAS 서버로 사용하여 WebRTC signaling 처리와 Redis 오픈 소스를 함께 운영하며 채팅 메시지의 저장과 중계를 처리했습니다. 하지만, 서버를 수평 확장하거나 로드밸런서를 도입할 경우 다음과 같은 문제가 발생했습니다.
+
+- 같은 방에 참여한 사용자들이 서로 다른 서버에 접속 시 메시지 동기화 불가
+- 채팅 메시지 중계 및 상태가 서버 인스턴스마다 달라짐
+- WebRTC 시그널링 정보가 서버 간 공유되지 않아 연결 오류 발생
+
+이 문제를 해결하기 위해 Redis의 Pub/Sub 구조를 도입하였습니다. Pub/Sub(Publish/Subscribe) 구조는 발행자(Publisher)가 특정 채널에 메시지를 발행하면, 해당 채널을 구독한(Subscriber) 모든 수신자에게 메시지를 비동기적으로 전달하는 방식입니다. 이를 기반으로 "발행-저장-중계" 패턴을 설계하여, 메시지가 수신되면 먼저 Redis에 영속적으로 저장하고 동시에 Pub 채널을 통해 구독 중인 다른 서버 인스턴스들에 실시간으로 전파하도록 구현했습니다.
+
+과정은 다음과 같습니다.
+
+- 사용자가 채팅 데이터를 전송하면 Redis에 저장(RPUSH)
+- 동시에 같은 데이터를 publish(chat:{roomId})
+- 구독 중인 서버 인스턴스들에서 emit("new-message")로 동일하게 브로드캐스트
+
+이를 통해 단순 중계 방식에서 발생할 수 있는 메시지 유실을 방지하고, 확장성 있고 안정적인 메시징 구조를 확보할 수 있었습니다.
+
+하지만 여기에는 한 가지 구조적 한계가 존재했습니다.
+Pub/Sub 구조 자체는 유효했지만, Redis 인스턴스를 EC2 내부에 설치해 운용하는 방식이었기 때문에 EC2 마다 저장하는 채팅 데이터가 달라진다는 문제점이 있었습니다.
+
+### 2.3 AWS ElastiCache for Redis를 이용한 브로드캐스트 중앙화
+
+이런 구조적 한계를 극복하고자, Redis를 EC2 내에서 자체 운용하는 대신 AWS ElastiCache for Redis를 도입하여 브로드캐스트의 중앙 집중화를 구현했습니다.
+모든 WAS 인스턴스가 하나의 Redis 클러스터에 연결되어 메시지를 발행(Publish)하고 구독(Subscribe)하게 함으로써, 서버 간의 채팅 데이터 불일치 문제를 근본적으로 해결할 수 있었습니다.
+
+<div align="center"><img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/backend-architecture.png" width="500px"> </div>
+
+위 사진과 같이 인프라를 구성함으로써, 한 인스턴스에서 채팅 메시지를 발행하면 Redis Pub/Sub 채널을 통해 해당 메시지가 모든 인스턴스에 실시간으로 전파되어 사용자 간의 실시간 메시지 브로드캐스트가 안정적으로 이루어집니다.
+또한, 모든 WAS 인스턴스가 동일한 Redis 클러스터에 채팅 데이터를 저장하게 됨으로써, 나중에 사용자가 다시 채팅방에 입장하더라도 어느 서버에 연결되었는지와 관계없이 동일한 채팅 기록을 불러올 수 있게 되었고, 서버 간 데이터 불일치 문제 역시 해소되었습니다.
+
+<구성 요소 설명>
+
+| 구성 요소                           | 설정                                                                                                     |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **ALB (Application Load Balancer)** | HTTPS/HTTP 리스너 그룹 설정(443, 80 포트), Target Group의 포트 4000로 트래픽을 라우팅                    |
+| **WAS1 / WAS2 (EC2)**               | Express 기반 Node.js 백엔드 서버로 각각 WebSocket 및 REST API를 처리하였으며, 기존 Redis 서버로도 운용됨 |
+| **Target Group**                    | ALB가 연결할 수 있는 대상 EC2 인스턴스 그룹으로 WAS 서버가 포함                                          |
+| **ElastiCache for Redis**           | Redis의 중앙 브로커 역할을 하며, Pub/Sub 메시지 발행 및 구독을 모든 WAS 인스턴스에서 처리                |
 
 ## 3. 채팅방 검색시 초성 검색 및 오타 허용
 
