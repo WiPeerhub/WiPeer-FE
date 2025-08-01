@@ -2,10 +2,6 @@ import { API } from "@/constants/api";
 
 export async function uploadFileToS3(file, signal) {
   const res = await fetch(API.uploadFile(file.type, file.name));
-  console.log("File:", file);
-  console.log(file.name, file.type, file.size);
-  console.log(file.file instanceof File);
-
   const { uploadUrl, downloadUrl, fileUrl } = await res.json();
 
   const uploadRes = await fetch(uploadUrl, {

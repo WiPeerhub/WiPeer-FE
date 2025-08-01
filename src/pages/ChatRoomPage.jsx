@@ -49,7 +49,6 @@ export default function ChatRoomPage() {
 
       try {
         const { room } = await getRoomByRoomId(roomId);
-        console.log(room);
         if (!room || !room.ownerId) return;
 
         await recordRoomVisit({
