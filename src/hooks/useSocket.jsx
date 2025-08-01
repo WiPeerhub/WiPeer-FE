@@ -15,7 +15,9 @@ export default function useSocket(roomId, setConversation) {
   const ownerId = getOrCreateOwnerId();
 
   useEffect(() => {
-    const socket = io(BASE_URL);
+    const socket = io(BASE_URL, {
+      transports: ["websocket"],
+    });
     socketRef.current = socket;
 
     socket.on("connect", () => {
@@ -37,8 +39,13 @@ export default function useSocket(roomId, setConversation) {
       setConversation(history);
     });
 
-    socket.on("chat-message", (messageObj) => {
-      setConversation((prev) => [...prev, messageObj]);
+    socket.on("new-message", (messageObj) => {
+      setConversation((prev) => {
+        const currentMessageObj = prev.find((msg) => msg.id === messageObj.id);
+        if (currentMessageObj) return prev;
+
+        return [...prev, messageObj];
+      });
     });
 
     socket.on("message-updated", (updatedMessage) => {
@@ -58,8 +65,6 @@ export default function useSocket(roomId, setConversation) {
     });
 
     socket.on("user-joined", (socketId) => {
-      console.log(socketId);
-      console.log("user-joined:", socketId);
       const { peer } = createPeerConnection(socket, socketId, false, setConversation, dataChannelsRef);
       peersRef.current[socketId] = peer;
     });
