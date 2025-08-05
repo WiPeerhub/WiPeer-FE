@@ -15,7 +15,6 @@
 
 # 📖 목차
 
-- [🔍 프리뷰](#-프리뷰)
 - [⚒️ 기술 스택](#-기술-스택)
 - [💥 동기](#-동기)
 - [🎯 기능](#-기능)
@@ -37,31 +36,6 @@
 - [🗓️ 기간](#️-기간)
 - [📝 회고](#-회고)
 
-<br>
-
-# 🔍 프리뷰
-
-## 💻 로그인 및 채팅방 목록 페이지 이동
-
-<div align="center" style="height: 530px">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%A1%9C%EA%B7%B8%EC%9D%B8%26%EB%8B%89%EB%84%A4%EC%9E%84%EC%9E%85%EB%A0%A5.gif" width="520px" />
-</div>
-<br>
-
-## 🧑‍💻 채팅방 생성 및 공유
-
-<div align="center" style="height: 530px">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EB%B0%A9%EC%83%9D%EC%84%B1%EB%B0%8F%EA%B3%B5%EC%9C%A0.gif" width="520px" />
-</div>
-<br>
-<br>
-
-## 👨‍👩‍👧‍👧 채팅방 입장 및 실시간 채팅
-
-<div align="center" style="height: 530px">
-  <img src="https://noddy-app.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85%EB%B0%A9%EC%9E%85%EC%9E%A5%EB%B0%8F%EC%B1%84%ED%8C%85%EC%8B%9C%EC%9E%91.gif" width="520px" />
-</div>
-<br>
 <br>
 
 # ⚒️ 기술 스택
@@ -160,6 +134,8 @@
 - 검색어를 기준으로 채팅방 제목과 설명의 유사도를 측정하여 검색되도록 하였습니다
   - Levenshtein 알고리즘을 활용해 철자 오타나 입력 실수가 있어도 유사도가 높은 채팅방이 검색 결과에 포함되도록 구현하였습니다.
   - 한글 초성 검색 기능을 도입하여 초성만 입력해도 해당 초성을 포함하는 채팅방을 쉽게 찾아볼 수 있도록 하였습니다.
+
+<br>
 
 # 💻 챌린지
 
