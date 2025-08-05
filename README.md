@@ -5,9 +5,12 @@
 <div align="center"> WiPeer는 동일한 Wi-Fi 네트워크에 연결된 사용자들끼리 채팅할 수 있는 웹/앱 기반 애플리케이션입니다. </div>
 
 <br>
-<div align="center">  <a href="https://www.wipeer.site">Deployed website</a> |
+<div align="center">
+  <a href="https://www.wipeer.site">Deployed website</a> |
   <a href="https://github.com/WiPeerhub/WiPeer-FE">Frontend Repository</a> |
-  <a href="https://github.com/WiPeerhub/WiPeer-BE">Backend Repository</a> </div>
+  <a href="https://github.com/WiPeerhub/WiPeer-BE">Backend Repository</a> | 
+  <a href="https://github.com/WiPeerhub/WiPeer-Infra">Infra Repository</a>
+   </div>
 
 <br>
 <br>
@@ -66,7 +69,8 @@
     <img src="https://img.shields.io/badge/terraform-844FBA?style=for-the-badge&logo=terraform&logoColor=white">
   <br>
 </div>
-  <br>
+
+<br>
 
 # 💥 동기
 
@@ -304,15 +308,6 @@ Pub/Sub 구조 자체는 유효했지만, Redis 인스턴스를 EC2 내부에 �
 
 위 사진과 같이 인프라를 구성함으로써, 한 인스턴스에서 채팅 메시지를 발행하면 Redis Pub/Sub 채널을 통해 해당 메시지가 모든 인스턴스에 실시간으로 전파되어 사용자 간의 실시간 메시지 브로드캐스트가 안정적으로 이루어집니다.
 또한, 모든 WAS 인스턴스가 동일한 Redis 클러스터에 채팅 데이터를 저장하게 됨으로써, 나중에 사용자가 다시 채팅방에 입장하더라도 어느 서버에 연결되었는지와 관계없이 동일한 채팅 기록을 불러올 수 있게 되었고, 서버 간 데이터 불일치 문제 역시 해소되었습니다.
-
-<구성 요소 설명>
-
-| 구성 요소                           | 설정                                                                                                     |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **ALB (Application Load Balancer)** | HTTPS/HTTP 리스너 그룹 설정(443, 80 포트), Target Group의 포트 4000로 트래픽을 라우팅                    |
-| **WAS1 / WAS2 (EC2)**               | Express 기반 Node.js 백엔드 서버로 각각 WebSocket 및 REST API를 처리하였으며, 기존 Redis 서버로도 운용됨 |
-| **Target Group**                    | ALB가 연결할 수 있는 대상 EC2 인스턴스 그룹으로 WAS 서버가 포함                                          |
-| **ElastiCache for Redis**           | Redis의 중앙 브로커 역할을 하며, Pub/Sub 메시지 발행 및 구독을 모든 WAS 인스턴스에서 처리                |
 
 ## 3. 채팅방 검색시 초성 검색 및 오타 허용
 
