@@ -8,7 +8,7 @@
 <div align="center">
   <a href="https://www.wipeer.site">Deployed website</a> |
   <a href="https://github.com/WiPeerhub/WiPeer-FE">Frontend Repository</a> |
-  <a href="https://github.com/WiPeerhub/WiPeer-BE">Backend Repository</a> | 
+  <a href="https://github.com/WiPeerhub/WiPeer-BE">Backend Repository</a> |
   <a href="https://github.com/WiPeerhub/WiPeer-Infra">Infra Repository</a>
    </div>
 
@@ -30,9 +30,10 @@
     - [1.1 서비스에 접속한 사람들을 Wi-Fi 단위로 연결하기](#11-서비스에-접속한-사람들을-wi-fi-단위로-연결하기)
     - [1.2 사용자 입장부터 채팅방 공유까지](#12-사용자-입장부터-채팅방-입장까지)
   - [2. WebRTC를 활용한 Latency 최적화](#2-webrtc를-활용한-latency-최적화)
-    - [2.1 WebRTC Mesh 환경 구축](#21-webrtc-mesh-환경-구축)
-    - [2.2 Redis Pub/Sub 기반 채팅 메시지 중계 시스템](#22-redis-pubsub-기반-채팅-메시지-중계-시스템)
-    - [2.3 AWS ElastiCache for Redis를 이용한 브로드캐스트 중앙화](#23-aws-elasticache-for-redis를-이용한-브로드캐스트-중앙화)
+    - [2.1 RTCPeerConnection 기반 P2P DataChannel 생성](#21-rtcpeerconnection-기반-p2p-datachannel-생성)
+    - [2.2 WebRTC Mesh 환경 구축](#22-webrtc-mesh-환경-구축)
+    - [2.3 Redis Pub/Sub 기반 채팅 메시지 중계 시스템](#23-redis-pubsub-기반-채팅-메시지-중계-시스템)
+    - [2.4 AWS ElastiCache for Redis를 이용한 브로드캐스트 중앙화](#24-aws-elasticache-for-redis를-이용한-브로드캐스트-중앙화)
   - [3. 채팅방 검색시 초성 검색 및 오타 허용](#3-채팅방-검색시-초성-검색-및-오타-허용)
     - [3.1 한글 유니코드 조합 규칙을 활용한 초성 검색](#31-한글-유니코드-조합-규칙을-활용한-초성-검색)
     - [3.2 levenshtein 알고리즘을 활용한 유사도 검사](#32-levenshtein-알고리즘을-활용한-유사도-검사)
@@ -218,14 +219,63 @@ server {
 
 ## 2. Latency 최소화를 위한 WebRTC Datachannel 구축
 
-채팅 서비스를 기획하면서 처음에는 "실시간 메시지"라고 하면 당연히 socket.io를 사용하는 것이 최선이라고 생각했습니다.
+### 2.1 RTCPeerConnection 기반 P2P DataChannel 생성
 
-하지만 아이디어를 구체화하는 과정에서, WebSocket은 모든 메시지가 중간 서버를 반드시 경유하기 때문에, 사용자 간의 소통이 많아질수록 서버에 부하가 쌓이고 그로 인해 지연(latency)이 발생할 수 있다는 점이 고민되었습니다.
-이러한 문제를 최소화할 수 있는 다른 방법이 없을까를 고민하던 중, 서버를 거치지 않고 클라이언트 간 직접 통신이 가능한 P2P(Peer-to-Peer) 방식인 WebRTC를 알게 되었습니다.
+실시간 채팅 서비스를 기획하면서 가장 먼저 고려한 점은 "메시지를 얼마나 빠르고 안정적으로 전달할 수 있는가"였습니다.<br>
+일반적으로 WebSocket(socket.io)을 이용하면 충분히 실시간성을 확보할 수 있지만, 모든 메시지가 중앙 서버를 반드시 경유하기 때문에 사용자가 많아질수록 서버 부하와 네트워크 지연(latency)이 누적된다는 한계가 존재합니다.<br>
+<br>
+이를 해결하기 위해 도입한 것이 WebRTC의 RTCPeerConnection입니다. RTCPeerConnection은 브라우저 간 직접 통신(Peer-to-Peer, P2P)을 가능하게 하는 API로, 음성·영상 스트리밍뿐 아니라 데이터 교환에도 활용할 수 있습니다.
+이 과정에서 텍스트나 파일처럼 임의의 데이터를 송수신할 수 있도록 지원하는 채널이 바로 DataChannel입니다.
 
-특히 저는 단순한 채팅뿐만 아니라 무거운 파일 전송이나 화면 공유 등으로 기능이 자연스럽게 확장되는 구조를 염두에 두고 있었기 때문에, 중간 서버를 경유하지 않는 WebRTC의 도입이 더욱 적합하다는 판단이 들었습니다.
+DataChannel을 통해 메시지를 주고받으면 다음과 같은 이점이 있습니다.
 
-### 2.1 WebRTC Mesh 환경 구축
+- Latency 최소화: 메시지가 서버를 거치지 않고 곧바로 상대 피어에 도달 → 입력과 동시에 전달되는 체감 속도 확보
+
+- 서버 부하 감소: 대규모 트래픽이 발생해도 메시지 전달은 클라이언트 간 직접 처리 → 서버는 signaling·저장 역할만 담당
+
+- 확장성: 동일한 채널을 활용해 파일 전송, 화면 공유, 제어 신호 등 다양한 기능으로 확장 가능
+
+<RTCPeerConnectiond을 통한 DataChannel 생성>
+
+```javascript
+export function createPeerConnection(socket, targetId, initiator, peersRef, channelsRef) {
+  const peer = new RTCPeerConnection(config);
+  peersRef.current[targetId] = peer;
+
+  // ICE 후보 전파
+  peer.onicecandidate = (e) => {
+    if (e.candidate) {
+      socket.emit("ice-candidate", { target: targetId, candidate: e.candidate });
+    }
+  };
+
+  if (initiator) {
+    // Initiator: DataChannel 생성 후 Offer 발행
+    const channel = peer.createDataChannel("chat");
+    channelsRef.current[targetId] = channel;
+
+    channel.onopen = () => console.log("DataChannel open (initiator)");
+
+    peer.createOffer().then((offer) => {
+      peer.setLocalDescription(offer);
+      socket.emit("offer", { target: targetId, sdp: offer });
+    });
+
+    return { peer, channel };
+  } else {
+    // Responder: 상대가 만든 DataChannel 수신
+    peer.ondatachannel = (e) => {
+      const channel = e.channel;
+      channelsRef.current[targetId] = channel;
+      channel.onopen = () => console.log("DataChannel open (responder)");
+    };
+
+    return { peer };
+  }
+}
+```
+
+### 2.2 WebRTC Mesh 환경 구축
 
 WebRTC는 Peer-to-Peer(P2P) 연결 방식을 기반으로 하며, 사용자 간의 1:1 연결이 필요합니다. 따라서 3명 이상의 사용자들이 같은 채팅방에 입장하면 Mesh 형태의 Network 구조가 필요하였습니다.
 
@@ -254,31 +304,73 @@ WebRTC는 Peer-to-Peer(P2P) 연결 방식을 기반으로 하며, 사용자 간�
 2. 기존 참여자 목록 수신 및 연결 요청 시작
    Signaling 서버는 새로운 사용자가 채팅방에 입장하면, 해당 사용자에게 현재 방에 참여 중인 다른 사용자들의 정보를 전달합니다. 이를 바탕으로 새로 입장한 사용자는 각 기존 참여자들과 RTCPeerConnection을 생성하고 offer를 전달합니다.
 
-```javascript
-// signaling 서버
-socket.on("join-room", async (roomId) => {
-  socket.join(roomId);
+   ```javascript
+   // signaling 서버
+   socket.on("join-room", async (roomId) => {
+     socket.join(roomId);
 
-  const clientsInRoom = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
-  const otherUsers = clientsInRoom.filter((id) => id !== socket.id);
+     const clientsInRoom = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+     const otherUsers = clientsInRoom.filter((id) => id !== socket.id);
 
-  socket.emit("all-users", otherUsers); // 기존 사용자 목록 전달
+     socket.emit("all-users", otherUsers); // 기존 사용자 목록 전달
 
-  const history = await getMessages(roomId); // 채팅 기록 전달
-  socket.emit("chat-history", history);
+     const history = await getMessages(roomId); // 채팅 기록 전달
+     socket.emit("chat-history", history);
 
-  socket.to(roomId).emit("user-joined", socket.id); // 다른 사용자에게 새 사용자 알림
-});
-```
+     socket.to(roomId).emit("user-joined", socket.id); // 다른 사용자에게 새 사용자 알림
+   });
+   ```
 
 3. Offer/Answer 및 ICE Candidate 교환
    각 사용자는 WebSocket을 통해 offer, answer, ICE candidate와 같은 signaling 메시지를 교환합니다.
    이 과정을 통해 각 사용자 간에 NAT 환경을 통과할 수 있도록 최적의 경로를 찾아 P2P 연결을 성립시킵니다.
 
+   ```javascript
+   // Offer 수신 처리: 원격 SDP 설정 → Answer 생성/전달
+   export async function handleOffer({ sender, sdp }, socket, peersRef, channelsRef) {
+     const peer = new RTCPeerConnection(config);
+     peersRef.current[sender] = peer;
+
+     peer.onicecandidate = (e) => {
+       if (e.candidate) socket.emit("ice-candidate", { target: sender, candidate: e.candidate });
+     };
+
+     peer.ondatachannel = (e) => {
+       channelsRef.current[sender] = e.channel;
+       e.channel.onopen = () => console.log("DataChannel open (handleOffer)");
+     };
+
+     await peer.setRemoteDescription(new RTCSessionDescription(sdp));
+     const answer = await peer.createAnswer();
+     await peer.setLocalDescription(answer);
+     socket.emit("answer", { target: sender, sdp: answer });
+   }
+   // Answer 수신 처리: 원격 SDP 설정
+   export async function handleAnswer({ sender, sdp }, peersRef) {
+     const peer = peersRef.current[sender];
+     if (!peer) return;
+     try {
+       await peer.setRemoteDescription(new RTCSessionDescription(sdp));
+     } catch (err) {
+       console.error("setRemoteDescription failed:", err);
+     }
+   }
+
+   // ICE 후보 수신 처리
+   export function handleCandidate({ sender, candidate }, peersRef) {
+     const peer = peersRef.current[sender];
+     if (peer && candidate) {
+       peer.addIceCandidate(new RTCIceCandidate(candidate)).catch((err) => {
+         console.error("addIceCandidate failed:", err);
+       });
+     }
+   }
+   ```
+
 4. 연결 성립 후 DataChannel 생성
    RTCPeerConnection이 완료되면, DataChannel을 통해 실시간 메시지를 주고받을 수 있는 통로가 열립니다. 이후의 메시지는 WebSocket을 거치지 않고 P2P 방식으로 바로 전달됩니다.
 
-### 2.2 Redis Pub/Sub 기반 채팅 메시지 중계 시스템
+### 2.3 Redis Pub/Sub 기반 채팅 메시지 중계 시스템
 
 기존에는 하나의 EC2 인스턴스를 WAS 서버로 사용하여 WebRTC signaling 처리와 Redis 오픈 소스를 함께 운영하며 채팅 메시지의 저장과 중계를 처리했습니다. 하지만, 서버를 수평 확장하거나 로드밸런서를 도입할 경우 다음과 같은 문제가 발생했습니다.
 
@@ -286,7 +378,8 @@ socket.on("join-room", async (roomId) => {
 - 채팅 메시지 중계 및 상태가 서버 인스턴스마다 달라짐
 - WebRTC 시그널링 정보가 서버 간 공유되지 않아 연결 오류 발생
 
-이 문제를 해결하기 위해 Redis의 Pub/Sub 구조를 도입하였습니다. Pub/Sub(Publish/Subscribe) 구조는 발행자(Publisher)가 특정 채널에 메시지를 발행하면, 해당 채널을 구독한(Subscriber) 모든 수신자에게 메시지를 비동기적으로 전달하는 방식입니다. 이를 기반으로 "발행-저장-중계" 패턴을 설계하여, 메시지가 수신되면 먼저 Redis에 영속적으로 저장하고 동시에 Pub 채널을 통해 구독 중인 다른 서버 인스턴스들에 실시간으로 전파하도록 구현했습니다.
+이 문제를 해결하기 위해 Redis의 Pub/Sub 구조를 도입하였습니다.<br>
+Pub/Sub(Publish/Subscribe) 구조는 발행자(Publisher)가 특정 채널에 메시지를 발행하면, 해당 채널을 구독한(Subscriber) 모든 수신자에게 메시지를 비동기적으로 전달하는 방식입니다. 이를 기반으로 "발행-저장-중계" 패턴을 설계하여, 메시지가 수신되면 먼저 Redis에 영속적으로 저장하고, 동시에 Pub 채널을 통해 구독 중인 다른 서버 인스턴스들에 실시간으로 메시지를 전파하도록 구현했습니다.
 
 과정은 다음과 같습니다.
 
@@ -299,7 +392,7 @@ socket.on("join-room", async (roomId) => {
 하지만 여기에는 한 가지 구조적 한계가 존재했습니다.
 Pub/Sub 구조 자체는 유효했지만, Redis 인스턴스를 EC2 내부에 설치해 운용하는 방식이었기 때문에 EC2 마다 저장하는 채팅 데이터가 달라진다는 문제점이 있었습니다.
 
-### 2.3 AWS ElastiCache for Redis를 이용한 브로드캐스트 중앙화
+### 2.4 AWS ElastiCache for Redis를 이용한 브로드캐스트 중앙화
 
 이런 구조적 한계를 극복하고자, Redis를 EC2 내에서 자체 운용하는 대신 AWS ElastiCache for Redis를 도입하여 브로드캐스트의 중앙 집중화를 구현했습니다.
 모든 WAS 인스턴스가 하나의 Redis 클러스터에 연결되어 메시지를 발행(Publish)하고 구독(Subscribe)하게 함으로써, 서버 간의 채팅 데이터 불일치 문제를 근본적으로 해결할 수 있었습니다.
