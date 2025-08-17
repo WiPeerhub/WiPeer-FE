@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserStore } from "@/stores/useUserStore";
+import { useUserStore, type UserInfo } from "@/stores/useUserStore";
 
 export default function OAuthCallback() {
   const setUserInfo = useUserStore((state) => state.setUserInfo);
@@ -19,7 +19,7 @@ export default function OAuthCallback() {
         return;
       }
 
-      const userInfo = await res.json();
+      const userInfo = (await res.json()) as UserInfo;
       setUserInfo(userInfo);
       localStorage.setItem("ownerId", userInfo.id);
       navigate("/main", { replace: true });

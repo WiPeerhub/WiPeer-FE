@@ -1,15 +1,6 @@
 import { create } from "zustand";
 import { getRoomsByIP } from "@/utils/roomAPI";
-
-export interface Room {
-  roomId: string;
-  title: string;
-  description?: string;
-  timestamp?: number;
-  password?: string;
-  ownerId?: string;
-  isPrivate?: boolean;
-}
+import type { Room } from "@/types/room";
 
 interface RoomListState {
   rooms: Room[];

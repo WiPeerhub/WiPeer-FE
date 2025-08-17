@@ -1,28 +1,30 @@
-import ChatRoomMessage from "@/components/Chat/ChatRoomMessage";
-import { Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import ChatRoomMessage from "@/components/Chat/ChatRoomMessage";
 import UploadedFileList from "@/components/FileUpload/UploadedFileList";
 import FileUploadButton from "@/components/FileUpload/FileUploadButton";
 import HiddenFileInput from "@/components/FileUpload/HiddenFileInput";
-import { useParams } from "react-router-dom";
+import type { Room } from "@/types/room";
+import type { ConversationMessage, SelectedFileItem, UploadedFileInfo } from "@/types/chat";
+import { Send } from "lucide-react";
 import useSocket from "@/hooks/useSocket";
 import { uploadCompressedFileToS3 } from "@/utils/uploadCompressedFileToS3";
 import { incrementMessageCount } from "@/utils/setOrGetNicknameStats";
 import { recordRoomVisit, getRoomByRoomId } from "@/utils/roomAPI";
 
 export default function ChatRoomPage() {
-  const [conversation, setConversation] = useState([]);
+  const [conversation, setConversation] = useState<ConversationMessage[]>([]);
   const [preventAutoScroll, setPreventAutoScroll] = useState(false);
-  const [message, setMessage] = useState("");
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [message, setMessage] = useState<string>("");
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFileItem[]>([]);
   const [isFileUploading, setIsFileUpLoading] = useState(false);
   const nickName = localStorage.getItem("nickName");
-  const { roomId } = useParams();
+  const { roomId = "" } = useParams<{ roomId: string }>();
   const sendMessage = useSocket(roomId, setConversation);
-  const bottomRef = useRef(null);
-  const scrollContainerRef = useRef(null);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const isFirstRender = useRef(true);
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -48,7 +50,7 @@ export default function ChatRoomPage() {
       if (!userId || !roomId) return;
 
       try {
-        const { room } = await getRoomByRoomId(roomId);
+        const { room } = (await getRoomByRoomId(roomId)) as { room?: Room };
         if (!room || !room.ownerId) return;
 
         await recordRoomVisit({
@@ -56,16 +58,17 @@ export default function ChatRoomPage() {
           roomId,
           userId,
         });
-      } catch (error) {
-        console.error("방 입장 기록 실패:", error.message);
+      } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : String(error);
+        console.error("방 입장 기록 실패:", msg);
       }
     };
 
     initRoomVisit();
   }, [roomId]);
 
-  const handleFileSelect = (event) => {
-    const files = Array.from(event.target.files);
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
     const newFiles = files.map((file) => ({
       id: Date.now() + Math.random(),
       file: file,
@@ -89,14 +92,14 @@ export default function ChatRoomPage() {
 
     if (!hasMessage && !hasFile) return;
 
-    const uploadedFiles = [];
+    const uploadedFiles: UploadedFileInfo[] = [];
 
     if (hasFile) {
       setIsFileUpLoading(true);
       for (const fileItem of selectedFiles) {
         const { fileUrl, downloadUrl } = await uploadCompressedFileToS3(fileItem, fileItem.abortController.signal);
 
-        const fileInfoObj = {
+        const fileInfoObj: UploadedFileInfo = {
           id: fileItem.id,
           fileUrl,
           downloadUrl,
@@ -112,7 +115,7 @@ export default function ChatRoomPage() {
       setIsFileUpLoading(false);
     }
 
-    const combinedMessage = {
+    const combinedMessage: ConversationMessage = {
       id: Date.now().toString(),
       type: hasFile ? "mixed" : "message",
       ownerId: localStorage.getItem("ownerId"),
@@ -123,7 +126,7 @@ export default function ChatRoomPage() {
     };
 
     sendMessage(combinedMessage);
-    incrementMessageCount(nickName);
+    incrementMessageCount(nickName as string);
     setMessage("");
     setConversation((prev) => [...prev, combinedMessage]);
   };
@@ -169,7 +172,6 @@ export default function ChatRoomPage() {
           <FileUploadButton fileInputRef={fileInputRef} />
           <HiddenFileInput fileInputRef={fileInputRef} handleFileSelect={handleFileSelect} />
           <textarea
-            type="text"
             value={message}
             placeholder="메시지를 입력하세요..."
             className="flex-1 resize-none overflow-hidden bg-transparent py-2 text-gray-700 outline-none"
