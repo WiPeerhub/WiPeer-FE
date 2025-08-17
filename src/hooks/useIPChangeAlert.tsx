@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-export default function useIPChangeAlert(ip) {
+export default function useIPChangeAlert(ip: string): void {
   const prevIP = useRef("");
 
   useEffect(() => {

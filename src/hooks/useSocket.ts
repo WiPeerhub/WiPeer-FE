@@ -4,7 +4,9 @@ import { BASE_URL } from "@/constants/api";
 import { useRoomListStore } from "@/stores/useRoomListStore";
 import { createPeerConnection, handleOffer, handleAnswer, handleCandidate } from "@/utils/peerManager";
 import { useMyRoomStore } from "@/stores/useMyRoomStore";
-import { getOrCreateOwnerId } from "./../utils/getOrCreateOwnerId";
+import { getOrCreateOwnerId } from "../utils/getOrCreateOwnerId";
+
+type Id = string;
 
 export default function useSocket(roomId, setConversation) {
   const socketRef = useRef(null);
