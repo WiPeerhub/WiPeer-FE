@@ -12,7 +12,7 @@ import { Toaster } from "sonner";
 
 export default function App() {
   useClientIP();
-  const ip = useClientIPStore((state) => state.ip);
+  const ip = useClientIPStore((state: any) => state.ip);
   useIPChangeAlert(ip);
 
   return (
