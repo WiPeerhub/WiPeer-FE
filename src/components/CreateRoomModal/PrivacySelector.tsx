@@ -1,5 +1,15 @@
 import { Globe, Lock } from "lucide-react";
+import type React from "react";
 import PasswordInput from "@/components/CreateRoomModal/PasswordInput";
+
+interface PrivacySelectorProps {
+  isPrivate: boolean;
+  isFormValid: boolean;
+  onHandelSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
+  updateIsPrivate: (value: boolean) => void;
+  password: string;
+  updatePassword: React.Dispatch<React.SetStateAction<string>>;
+}
 
 export default function PrivacySelector({
   isPrivate,
@@ -8,7 +18,7 @@ export default function PrivacySelector({
   updateIsPrivate,
   password,
   updatePassword,
-}) {
+}: PrivacySelectorProps) {
   return (
     <>
       <div>

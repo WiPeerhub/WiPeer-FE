@@ -2,22 +2,34 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Lock, Users, Clock, Trash2 } from "lucide-react";
 import { API } from "@/constants/api";
-import { deleteRoom } from "@/utils/roomAPI";
+import { deleteRoom, updateRoomIP } from "@/utils/roomAPI";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import PasswordModal from "@/components/PasswordConfirmModal/PasswordModal";
 import RoomDeleteModal from "@/components/RoomDeleteModal/RoomDeleteModal";
 import { formatTimestamp } from "@/utils/formatTimestamp";
 import { decrementRoomCount } from "@/utils/setOrGetNicknameStats";
 import useClientIP from "@/hooks/useClientIP";
-import { updateRoomIP } from "@/utils/roomAPI";
 
-export default function ChatRoomCard(props) {
+interface ChatRoomCardProps {
+  isPrivate?: boolean;
+  roomId: string;
+  name: string;
+  description?: string | null;
+  password?: string | null;
+  roomOwnerId: string;
+}
+
+type LastMessageResponse = {
+  data?: { timestamp?: string | number };
+};
+
+export default function ChatRoomCard(props: ChatRoomCardProps) {
   const { isPrivate, roomId, name, description, password, roomOwnerId } = props;
-  const [lastMessagetimestamp, setLastMessagetimestamp] = useState("");
-  const [isPaswordInputOpen, setIsPaswordInputOpen] = useState(false);
-  const [inputPassword, setInputPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [roomDeleteModalOpen, setRoomDeleteModalOpen] = useState(false);
+  const [lastMessagetimestamp, setLastMessagetimestamp] = useState<string>("");
+  const [isPaswordInputOpen, setIsPaswordInputOpen] = useState<boolean>(false);
+  const [inputPassword, setInputPassword] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [roomDeleteModalOpen, setRoomDeleteModalOpen] = useState<boolean>(false);
   const nickName = localStorage.getItem("nickName");
   const ownerId = getOrCreateOwnerId();
   const clientIP = useClientIP();
@@ -26,10 +38,10 @@ export default function ChatRoomCard(props) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLastMessage = async () => {
+    const fetchLastMessage = async (): Promise<void> => {
       try {
         const res = await fetch(API.getLastMessage(roomId));
-        const lastMessageData = await res.json();
+        const lastMessageData = (await res.json()) as LastMessageResponse;
         const rawTimeStamp = lastMessageData.data?.timestamp;
 
         if (!rawTimeStamp) {
@@ -56,17 +68,18 @@ export default function ChatRoomCard(props) {
     navigate(`/room/${roomId}`);
   };
 
-  const handleDeleteRoom = async () => {
+  const handleDeleteRoom = async (): Promise<void> => {
     try {
       await deleteRoom({ ownerId, roomId });
 
-      decrementRoomCount(nickName);
-    } catch (err) {
-      console.error("삭제 에러:", err.message);
+      decrementRoomCount(nickName as string);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("삭제 에러:", msg);
     }
   };
 
-  const handleModalConfirm = () => {
+  const handleModalConfirm = (): void => {
     if (inputPassword === password) {
       setIsPaswordInputOpen(false);
       navigate(`/room/${roomId}`);
@@ -75,13 +88,14 @@ export default function ChatRoomCard(props) {
     }
   };
 
-  const handleRoomShare = async (e) => {
+  const handleRoomShare = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
     try {
       await updateRoomIP({ ownerId, roomId, ip: clientIP });
-    } catch (err) {
-      console.error("방 공유 실패", err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("방 공유 실패", msg);
     }
   };
 

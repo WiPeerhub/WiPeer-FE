@@ -1,13 +1,19 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from "react";
 import { MoreVertical, Edit, Trash2 } from "lucide-react";
 
-export default function EditMessage({ setShowEmojiPicker, onEdit, onDelete }) {
+interface EditMessageMenuProps {
+  setShowEmojiPicker: Dispatch<SetStateAction<boolean>>;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+export default function EditMessageMenu({ setShowEmojiPicker, onEdit, onDelete }: EditMessageMenuProps) {
   const [isEditOrRemoveModal, setIsEditOrRemoveModal] = useState(false);
-  const menuRef = useRef(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setIsEditOrRemoveModal(false);
       }
     };

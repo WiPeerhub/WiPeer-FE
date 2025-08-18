@@ -1,5 +1,16 @@
 import { Smile } from "lucide-react";
 import { EMOJI_LIST } from "@/constants/emojiList";
+import type { Dispatch, SetStateAction } from "react";
+import type { EmojiReactions } from "@/types/chat";
+
+export interface SelectEmojiProps {
+  showEmojiPicker: boolean;
+  setShowEmojiPicker: Dispatch<SetStateAction<boolean>>;
+  updateReactions: Dispatch<SetStateAction<EmojiReactions>>;
+  reactions: EmojiReactions;
+  onPreventAutoScroll: () => void;
+  onShowEmojis: () => void;
+}
 
 export default function SelectEmoji({
   showEmojiPicker,
@@ -7,21 +18,23 @@ export default function SelectEmoji({
   updateReactions,
   onPreventAutoScroll,
   onShowEmojis,
-}) {
+}: SelectEmojiProps) {
   const ownerId = localStorage.getItem("ownerId");
 
-  const handleSelectEmoji = (emoji) => {
+  const handleSelectEmoji = (emoji: string) => {
     onPreventAutoScroll();
     onShowEmojis();
 
     updateReactions((prev) => {
+      if (!ownerId) return prev;
+
       const users = prev[emoji] || [];
 
       if (users.includes(ownerId)) {
         const newUsers = users.filter((userId) => userId !== ownerId);
         const newReactions = { ...prev, [emoji]: newUsers };
 
-        if (newReactions.length === 0) {
+        if (newUsers.length === 0) {
           delete newReactions[emoji];
         }
 

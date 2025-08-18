@@ -1,6 +1,15 @@
+import type React from "react";
+import { useRef } from "react";
 import { Hash } from "lucide-react";
 
-export default function TitleInput({ title, isFormValid, onHandelSubmit, updateTitle }) {
+interface TitleInputProps {
+  title: string;
+  isFormValid: boolean;
+  onHandelSubmit: (e: any) => void | Promise<void>;
+  updateTitle: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export default function TitleInput({ title, isFormValid, onHandelSubmit, updateTitle }: TitleInputProps) {
   return (
     <div>
       <label htmlFor="title" className="mb-2 block text-sm font-medium text-gray-700">

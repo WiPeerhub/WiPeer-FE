@@ -1,4 +1,11 @@
-export default function RoomDescriptionInput({ description, updateDescription }) {
+import type React from "react";
+
+interface RoomDescriptionInputProps {
+  description: string;
+  updateDescription: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export default function RoomDescriptionInput({ description, updateDescription }: RoomDescriptionInputProps) {
   return (
     <div>
       <label htmlFor="description" className="mb-2 block text-sm font-medium text-gray-700">

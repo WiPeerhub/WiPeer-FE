@@ -5,9 +5,25 @@ import EditMessageMenu from "@/components/Chat/EditMessageMenu";
 import ShowFileList from "@/components/Chat/ShowFileList";
 import UpdateMessage from "@/components/Chat/UpdateMessage";
 import SelectEmoji from "@/components/Chat/SelectEmoji";
+import type { UploadedFileInfo, EmojiReactions } from "@/types/chat";
 
-export default function ChatRoomMessage(props) {
-  const EditedmessageRef = useRef(null);
+interface ChatRoomMessageProps {
+  messageId: string;
+  messageOwnerId: string | null;
+  roomId: string;
+  type: "mixed" | "message" | string;
+  username: string | null;
+  timestamp: string;
+  message: string;
+  emojis: EmojiReactions | undefined;
+  files: UploadedFileInfo[] | undefined;
+  onImageLoad: () => void;
+  onEditMessageMenuLoad: () => void;
+  updatePreventAutoScroll: (value: boolean) => void;
+}
+
+export default function ChatRoomMessage(props: ChatRoomMessageProps) {
+  const EditedmessageRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -25,8 +41,8 @@ export default function ChatRoomMessage(props) {
     onEditMessageMenuLoad,
     updatePreventAutoScroll,
   } = props;
-  const [reactions, setReactions] = useState({});
-  const [newMessage, setNewMessage] = useState(message);
+  const [reactions, setReactions] = useState<EmojiReactions>({});
+  const [newMessage, setNewMessage] = useState<string>(message);
   const date = new Date(timestamp);
   const formattedTimestamp = formatTimestamp(date);
   const ownerId = localStorage.getItem("ownerId");
@@ -40,7 +56,7 @@ export default function ChatRoomMessage(props) {
   useEffect(() => {
     if (!reactions || Object.keys(reactions).length === 0) return;
 
-    const updateReactionOnServer = async () => {
+    const updateReactionOnServer = async (): Promise<void> => {
       try {
         const res = await fetch(API.updateReactions(roomId, messageId), {
           method: "PATCH",
@@ -67,7 +83,7 @@ export default function ChatRoomMessage(props) {
     setShowEmojiPicker(false);
   };
 
-  const handleUpdateMessage = async () => {
+  const handleUpdateMessage = async (): Promise<void> => {
     try {
       const res = await fetch(API.updateMessage(roomId, messageId), {
         method: "PATCH",
@@ -93,7 +109,7 @@ export default function ChatRoomMessage(props) {
   };
 
   const handleDeleteMessage = () => {
-    const deleteMessage = async () => {
+    const deleteMessage = async (): Promise<void> => {
       try {
         await fetch(API.deleteMessage(roomId, messageId), {
           method: "DELETE",
@@ -109,7 +125,7 @@ export default function ChatRoomMessage(props) {
 
     deleteMessage();
 
-    const deleteS3File = async () => {
+    const deleteS3File = async (): Promise<void> => {
       if (files && files.length > 0) {
         const fileKeys = files.map((file) => {
           return decodeURIComponent(new URL(file.fileUrl).pathname.slice(1));

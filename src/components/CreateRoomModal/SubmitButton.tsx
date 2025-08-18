@@ -1,6 +1,10 @@
 import { useRoomCreationStore } from "@/stores/useRoomCreationStore";
 
-export default function SubmitButton({ isFormValid }) {
+interface SubmitButtonProps {
+  isFormValid: boolean;
+}
+
+export default function SubmitButton({ isFormValid }: SubmitButtonProps) {
   const setIsRoomCreation = useRoomCreationStore((state) => state.setIsRoomCreation);
 
   return (

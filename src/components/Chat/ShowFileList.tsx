@@ -1,6 +1,12 @@
 import { FileText, Download } from "lucide-react";
+import type { UploadedFileInfo } from "@/types/chat";
 
-export default function ShowFileList({ files, onImageLoad }) {
+interface ShowFileListProps {
+  files: UploadedFileInfo[];
+  onImageLoad: () => void;
+}
+
+export default function ShowFileList({ files, onImageLoad }: ShowFileListProps) {
   return (
     <div className="mt-2 flex flex-wrap gap-3">
       {files.map((file) => {

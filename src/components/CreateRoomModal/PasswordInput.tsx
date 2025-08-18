@@ -1,6 +1,21 @@
+import type React from "react";
 import { Key } from "lucide-react";
 
-export default function PasswordInput({ password, isFormValid, onHandelSubmit, updatePassword, isPrivate }) {
+interface PasswordInputProps {
+  password: string;
+  isFormValid: boolean;
+  onHandelSubmit: (e: any) => void | Promise<void>;
+  updatePassword: React.Dispatch<React.SetStateAction<string>>;
+  isPrivate: boolean;
+}
+
+export default function PasswordInput({
+  password,
+  isFormValid,
+  onHandelSubmit,
+  updatePassword,
+  isPrivate,
+}: PasswordInputProps) {
   return (
     <>
       {isPrivate && (

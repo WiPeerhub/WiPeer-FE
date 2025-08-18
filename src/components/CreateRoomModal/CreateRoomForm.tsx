@@ -11,21 +11,30 @@ import CreateRoomHeader from "@/components/CreateRoomModal/CreateRoomHeader";
 import useClientIP from "@/hooks/useClientIP";
 import { incrementRoomCount } from "@/utils/setOrGetNicknameStats";
 
+interface CreateRoomPayload {
+  ip: string;
+  title: string;
+  description: string | null;
+  isPrivate: boolean;
+  password: string | null;
+  ownerId: string;
+}
+
 export default function CreateRoomForm() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [password, setPassword] = useState("");
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [isPrivate, setIsPrivate] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>("");
   const clientIP = useClientIP();
   const setIsRoomCreation = useRoomCreationStore((state) => state.setIsRoomCreation);
-  const fetchRooms = useRoomListStore((state) => state.fetchRooms);
+  const fetchRooms = useRoomListStore((state) => state.fetchRooms as (ip: string) => Promise<void>);
   const nickName = localStorage.getItem("nickName");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const ownerId = getOrCreateOwnerId();
 
-    const payload = {
+    const payload: CreateRoomPayload = {
       ip: "",
       title,
       description,
@@ -48,7 +57,7 @@ export default function CreateRoomForm() {
     setIsRoomCreation();
   };
 
-  const isFormValid = title.trim() && (!isPrivate || password.trim().length >= 4);
+  const isFormValid: boolean = title.trim().length > 0 && (!isPrivate || password.trim().length >= 4);
 
   return (
     <div className="w-full max-w-md rounded-lg bg-white shadow-xl">

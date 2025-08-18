@@ -1,17 +1,28 @@
+import type React from "react";
+import type { Dispatch, SetStateAction } from "react";
+
+interface UpdateMessageProps {
+  newMessage: string;
+  updatedMessageRef: React.Ref<HTMLDivElement>;
+  updateMessage: Dispatch<SetStateAction<string>>;
+  handleUpdateMessage: () => void;
+  setIsEditing: Dispatch<SetStateAction<boolean>>;
+  onEditMessageMenuLoad: () => void;
+}
+
 export default function UpdateMessage({
   newMessage,
+  updatedMessageRef,
   updateMessage,
   handleUpdateMessage,
   setIsEditing,
   onEditMessageMenuLoad,
-  updatedMessageRef,
-}) {
+}: UpdateMessageProps) {
   return (
     <div ref={updatedMessageRef} className="mt-1 flex flex-col gap-1">
       <div className="border-t border-gray-200 bg-blue-100 p-3">
         <div className="flex items-center gap-2 rounded-lg bg-gray-50 p-3">
           <textarea
-            type="text"
             value={newMessage}
             placeholder="메시지를 입력하세요..."
             className="flex-1 resize-none overflow-hidden bg-transparent py-2 text-gray-700 outline-none"
