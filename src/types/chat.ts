@@ -1,3 +1,5 @@
+export type EmojiReactions = Record<string, string[]>;
+
 export interface ConversationMessage {
   id: string;
   type: "mixed" | "message" | string;
@@ -6,7 +8,7 @@ export interface ConversationMessage {
   timestamp: string;
   message: string;
   files?: UploadedFileInfo[];
-  reactions?: number;
+  reactions?: EmojiReactions;
 }
 
 export interface SelectedFileItem {
