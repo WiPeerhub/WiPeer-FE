@@ -1,12 +1,20 @@
 import { X, FileText, ImageIcon, Video } from "lucide-react";
+import type { SelectedFileItem } from "@/types/chat";
+
+interface UploadedFileListProps {
+  updateFileUploadingState: (isUploading: boolean) => void;
+  isFileUploading: boolean;
+  selectedFiles: SelectedFileItem[];
+  updateSelectedFiles: React.Dispatch<React.SetStateAction<SelectedFileItem[]>>;
+}
 
 export default function UploadedFileList({
   updateFileUploadingState,
   isFileUploading,
   selectedFiles,
   updateSelectedFiles,
-}) {
-  const handleRemoveFile = (fileId) => {
+}: UploadedFileListProps) {
+  const handleRemoveFile = (fileId: number) => {
     updateSelectedFiles((prev) => {
       const fileToRemove = prev.find((f) => f.id === fileId);
       if (fileToRemove && fileToRemove.preview) {
@@ -16,7 +24,7 @@ export default function UploadedFileList({
     });
   };
 
-  const formatFileSize = (bytes) => {
+  const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
@@ -24,7 +32,7 @@ export default function UploadedFileList({
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const getFileIcon = (fileType) => {
+  const getFileIcon = (fileType: string) => {
     if (fileType.startsWith("image/")) {
       return <ImageIcon className="h-4 w-4 text-blue-500" />;
     }

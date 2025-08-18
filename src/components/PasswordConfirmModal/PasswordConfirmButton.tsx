@@ -1,4 +1,11 @@
-export default function PasswordConfirmButton({ passwordInputOpen, confirmPassword }) {
+import type { Dispatch, SetStateAction } from "react";
+
+interface PasswordConfirmButtonProps {
+  passwordInputOpen: Dispatch<SetStateAction<boolean>>;
+  confirmPassword: () => void;
+}
+
+export default function PasswordConfirmButton({ passwordInputOpen, confirmPassword }: PasswordConfirmButtonProps) {
   return (
     <div className="mt-4 flex justify-end gap-2">
       <button

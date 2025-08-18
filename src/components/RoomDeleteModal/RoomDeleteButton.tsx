@@ -1,4 +1,11 @@
-export default function RoomDeleteButton({ updateRoomDeleteModalOpen, handleDeleteRoom }) {
+import type { Dispatch, SetStateAction } from "react";
+
+interface RoomDeleteButtonProps {
+  updateRoomDeleteModalOpen: Dispatch<SetStateAction<boolean>>;
+  handleDeleteRoom: () => void;
+}
+
+export default function RoomDeleteButton({ updateRoomDeleteModalOpen, handleDeleteRoom }: RoomDeleteButtonProps) {
   return (
     <div className="flex gap-3">
       <button

@@ -1,4 +1,18 @@
-export default function PasswordInput({ inputPassword, updateInputPassword, errorMessage, confirmPassword }) {
+import type { Dispatch, SetStateAction } from "react";
+
+interface PasswordInputProps {
+  inputPassword: string;
+  updateInputPassword: Dispatch<SetStateAction<string>>;
+  errorMessage: string;
+  confirmPassword: () => void;
+}
+
+export default function PasswordInput({
+  inputPassword,
+  updateInputPassword,
+  errorMessage,
+  confirmPassword,
+}: PasswordInputProps) {
   return (
     <>
       <input

@@ -1,6 +1,11 @@
 import { Paperclip } from "lucide-react";
+import type { RefObject } from "react";
 
-export default function FileUploadButton({ fileInputRef }) {
+interface FileUploadButtonProps {
+  fileInputRef: RefObject<HTMLInputElement | null>;
+}
+
+export default function FileUploadButton({ fileInputRef }: FileUploadButtonProps) {
   return (
     <button
       onClick={() => fileInputRef.current?.click()}

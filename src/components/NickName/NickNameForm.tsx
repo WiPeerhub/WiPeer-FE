@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
-import { setNickNameStat } from "@/utils/setOrGetNicknameStats";
 
 export default function NickNameForm() {
-  const [nickName, setNickName] = useState("");
+  const [nickName, setNickName] = useState<string>("");
   const navigate = useNavigate();
 
-  const moveToChatRoomList = (e) => {
+  const moveToChatRoomList = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (nickName === "") {
@@ -16,7 +15,6 @@ export default function NickNameForm() {
 
     getOrCreateOwnerId();
     localStorage.setItem("nickName", nickName);
-    setNickNameStat(nickName);
     navigate("/chatRoomList");
   };
 
