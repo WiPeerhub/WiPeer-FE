@@ -1,17 +1,26 @@
 import { useEffect, useRef } from "react";
-import { io } from "socket.io-client";
+import { io, type Socket } from "socket.io-client";
 import { BASE_URL } from "@/constants/api";
 import { useRoomListStore } from "@/stores/useRoomListStore";
 import { createPeerConnection, handleOffer, handleAnswer, handleCandidate } from "@/utils/peerManager";
 import { useMyRoomStore } from "@/stores/useMyRoomStore";
 import { getOrCreateOwnerId } from "../utils/getOrCreateOwnerId";
+import type { ConversationMessage } from "@/types/chat";
+import type { Room } from "@/types/room";
+import type React from "react";
 
 type Id = string;
 
-export default function useSocket(roomId, setConversation) {
-  const socketRef = useRef(null);
-  const peersRef = useRef({});
-  const dataChannelsRef = useRef({});
+type RoomCreatedPayload = Room;
+type RoomIpUpdatedPayload = { updatedRoom: Room };
+
+export default function useSocket(
+  roomId: string | null,
+  setConversation: React.Dispatch<React.SetStateAction<ConversationMessage[]>>,
+) {
+  const socketRef = useRef<Socket | null>(null);
+  const peersRef = useRef<Record<string, RTCPeerConnection>>({});
+  const dataChannelsRef = useRef<Record<string, RTCDataChannel>>({});
   const setRoomList = useRoomListStore((state) => state.setRoomList);
   const setMyRooms = useMyRoomStore((state) => state.setMyRooms);
   const ownerId = getOrCreateOwnerId();
@@ -27,21 +36,21 @@ export default function useSocket(roomId, setConversation) {
       socket.emit("join-room", roomId);
     });
 
-    socket.on("new-room-created", (roomData) => {
+    socket.on("new-room-created", (roomData: RoomCreatedPayload) => {
       if (ownerId !== roomData.ownerId) return;
       setMyRooms((prev) => [...prev, roomData]);
     });
 
-    socket.on("room-ip-updated", (roomData) => {
+    socket.on("room-ip-updated", (roomData: RoomIpUpdatedPayload) => {
       const updatedRoom = roomData.updatedRoom;
       setRoomList((prev) => [...prev, updatedRoom]);
     });
 
-    socket.on("chat-history", (history) => {
+    socket.on("chat-history", (history: ConversationMessage[]) => {
       setConversation(history);
     });
 
-    socket.on("new-message", (messageObj) => {
+    socket.on("new-message", (messageObj: ConversationMessage) => {
       setConversation((prev) => {
         const currentMessageObj = prev.find((msg) => msg.id === messageObj.id);
         if (currentMessageObj) return prev;
@@ -50,7 +59,7 @@ export default function useSocket(roomId, setConversation) {
       });
     });
 
-    socket.on("message-updated", (updatedMessage) => {
+    socket.on("message-updated", (updatedMessage: ConversationMessage) => {
       setConversation((prev) => prev.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg)));
     });
 
@@ -58,20 +67,26 @@ export default function useSocket(roomId, setConversation) {
       setConversation((prev) => prev.filter((msg) => msg.id !== messageId));
     });
 
-    socket.on("all-users", (users) => {
+    socket.on("all-users", (users: string[]) => {
       users.forEach((socketId) => {
-        const { peer, channel } = createPeerConnection(socket, socketId, true, setConversation, dataChannelsRef);
+        const { peer, channel } = createPeerConnection(socket, socketId, true, setConversation, dataChannelsRef) as {
+          peer: RTCPeerConnection;
+          channel?: RTCDataChannel;
+        };
         peersRef.current[socketId] = peer;
-        dataChannelsRef.current[socketId] = channel;
+        if (channel) dataChannelsRef.current[socketId] = channel;
       });
     });
 
-    socket.on("user-joined", (socketId) => {
-      const { peer } = createPeerConnection(socket, socketId, false, setConversation, dataChannelsRef);
+    socket.on("user-joined", (socketId: string) => {
+      const { peer } = createPeerConnection(socket, socketId, false, setConversation, dataChannelsRef) as {
+        peer: RTCPeerConnection;
+        channel?: RTCDataChannel;
+      };
       peersRef.current[socketId] = peer;
     });
 
-    socket.on("room-deleted", (deletedRoomId) => {
+    socket.on("room-deleted", (deletedRoomId: string) => {
       setMyRooms((prev) => prev.filter((room) => room.roomId !== deletedRoomId));
       setRoomList((prev) => prev.filter((room) => room.roomId !== deletedRoomId));
     });
@@ -85,12 +100,12 @@ export default function useSocket(roomId, setConversation) {
     };
   }, [roomId]);
 
-  const sendMessage = (messageObj) => {
+  const sendMessage = (messageObj: ConversationMessage) => {
     Object.values(dataChannelsRef.current).forEach((channel) => {
       if (channel.readyState === "open") channel.send(JSON.stringify(messageObj));
     });
 
-    socketRef.current.emit("chat-message", { roomId, messageObj });
+    socketRef.current?.emit("chat-message", { roomId, messageObj });
   };
 
   return sendMessage;
