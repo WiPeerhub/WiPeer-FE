@@ -9,8 +9,6 @@ import type { ConversationMessage } from "@/types/chat";
 import type { Room } from "@/types/room";
 import type React from "react";
 
-type Id = string;
-
 type RoomCreatedPayload = Room;
 type RoomIpUpdatedPayload = { updatedRoom: Room };
 
