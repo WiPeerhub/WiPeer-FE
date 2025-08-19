@@ -9,7 +9,6 @@ import type { ConversationMessage, SelectedFileItem, UploadedFileInfo } from "@/
 import { Send } from "lucide-react";
 import useSocket from "@/hooks/useSocket";
 import { uploadCompressedFileToS3 } from "@/utils/uploadCompressedFileToS3";
-import { incrementMessageCount } from "@/utils/setOrGetNicknameStats";
 import { recordRoomVisit, getRoomByRoomId } from "@/utils/roomAPI";
 
 export default function ChatRoomPage() {
@@ -24,7 +23,7 @@ export default function ChatRoomPage() {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const isFirstRender = useRef(true);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -126,7 +125,6 @@ export default function ChatRoomPage() {
     };
 
     sendMessage(combinedMessage);
-    incrementMessageCount(nickName as string);
     setMessage("");
     setConversation((prev) => [...prev, combinedMessage]);
   };
