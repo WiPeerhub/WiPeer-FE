@@ -1,9 +1,21 @@
 import imageCompression from "browser-image-compression";
 import { uploadFileToS3 } from "@/utils/uploadFileToS3";
+import type { SelectedFileItem } from "@/types/chat";
 
-export async function uploadCompressedFileToS3(fileItem, signal) {
+type UploadResult = { fileUrl: string; downloadUrl: string };
+
+type ImageCompressionOptions = {
+  maxSizeMB?: number;
+  maxWidthOrHeight?: number;
+  useWebWorker?: boolean;
+};
+
+export async function uploadCompressedFileToS3(
+  fileItem: SelectedFileItem,
+  signal: AbortSignal | null,
+): Promise<UploadResult> {
   try {
-    const options = {
+    const options: ImageCompressionOptions = {
       maxSizeMB: 1,
       maxWidthOrHeight: 1024,
       useWebWorker: true,
@@ -12,7 +24,7 @@ export async function uploadCompressedFileToS3(fileItem, signal) {
     const targetFile = fileItem.file;
 
     if (fileItem.type.startsWith("image/")) {
-      fileItem.file = await imageCompression(targetFile, options);
+      fileItem.file = (await imageCompression(targetFile, options)) as File;
       const newFileSize = fileItem.file.size;
       fileItem.size = newFileSize;
     }

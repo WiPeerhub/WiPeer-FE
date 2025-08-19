@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-export const getOrCreateOwnerId = () => {
+export const getOrCreateOwnerId = (): string => {
   let id = localStorage.getItem("ownerId");
 
   if (!id) {

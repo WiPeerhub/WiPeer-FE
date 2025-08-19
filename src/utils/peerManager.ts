@@ -1,4 +1,27 @@
-const config = {
+import type React from "react";
+import type { Socket } from "socket.io-client";
+import type { ConversationMessage } from "@/types/chat";
+
+type Id = string;
+
+type RefMap<T> = { current: T };
+
+export interface OfferPayload {
+  sender: Id;
+  sdp: RTCSessionDescriptionInit;
+}
+
+export interface AnswerPayload {
+  sender: Id;
+  sdp: RTCSessionDescriptionInit;
+}
+
+export interface CandidatePayload {
+  sender: Id;
+  candidate: RTCIceCandidateInit;
+}
+
+const config: RTCConfiguration = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
     {
@@ -9,7 +32,13 @@ const config = {
   ],
 };
 
-export function createPeerConnection(socket, targetId, initiator, setConversation, dataChannelsRef) {
+export function createPeerConnection(
+  socket: Socket,
+  targetId: Id,
+  initiator: boolean,
+  setConversation: React.Dispatch<React.SetStateAction<ConversationMessage[]>>,
+  dataChannelsRef: RefMap<Record<string, RTCDataChannel>>,
+): { peer: RTCPeerConnection; channel?: RTCDataChannel } {
   const peer = new RTCPeerConnection(config);
 
   peer.onicecandidate = (e) => {
@@ -27,7 +56,7 @@ export function createPeerConnection(socket, targetId, initiator, setConversatio
 
     channel.onopen = () => console.log("사용자의 dataChannel 열림");
     channel.onmessage = (e) => {
-      const messageObj = JSON.parse(e.data);
+      const messageObj = JSON.parse(e.data) as ConversationMessage;
 
       setConversation((prev) => {
         const exist = prev.find((msg) => msg.id === messageObj.id);
@@ -37,7 +66,6 @@ export function createPeerConnection(socket, targetId, initiator, setConversatio
           return [...prev, messageObj];
         }
       });
-      console.log("기존 사용자가 보낸 메시지: ", e.data);
     };
 
     peer.createOffer().then((offer) => {
@@ -53,7 +81,7 @@ export function createPeerConnection(socket, targetId, initiator, setConversatio
 
       channel.onopen = () => console.log("새로운 사용자의 dataChannel 열림");
       channel.onmessage = (e) => {
-        const messageObj = JSON.parse(e.data);
+        const messageObj = JSON.parse(e.data) as ConversationMessage;
 
         setConversation((prev) => {
           const exist = prev.find((msg) => msg.id === messageObj.id);
@@ -63,7 +91,6 @@ export function createPeerConnection(socket, targetId, initiator, setConversatio
             return [...prev, messageObj];
           }
         });
-        console.log("새로운 사용자가 받은 메시지:", e.data);
       };
     };
 
@@ -71,7 +98,13 @@ export function createPeerConnection(socket, targetId, initiator, setConversatio
   }
 }
 
-export async function handleOffer({ sender, sdp }, socket, peersRef, dataChannelsRef, setConversation) {
+export async function handleOffer(
+  { sender, sdp }: OfferPayload,
+  socket: Socket,
+  peersRef: RefMap<Record<string, RTCPeerConnection>>,
+  dataChannelsRef: RefMap<Record<string, RTCDataChannel>>,
+  setConversation: React.Dispatch<React.SetStateAction<ConversationMessage[]>>,
+): Promise<void> {
   const peer = new RTCPeerConnection(config);
   peersRef.current[sender] = peer;
 
@@ -90,7 +123,7 @@ export async function handleOffer({ sender, sdp }, socket, peersRef, dataChannel
 
     channel.onopen = () => console.log("Offer opened");
     channel.onmessage = (e) => {
-      const messageObj = JSON.parse(e.data);
+      const messageObj = JSON.parse(e.data) as ConversationMessage;
       console.log("handleOffer Message: ", e.data);
 
       setConversation((prev) => {
@@ -110,7 +143,10 @@ export async function handleOffer({ sender, sdp }, socket, peersRef, dataChannel
   socket.emit("answer", { target: sender, sdp: answer });
 }
 
-export async function handleAnswer({ sender, sdp }, peersRef) {
+export async function handleAnswer(
+  { sender, sdp }: AnswerPayload,
+  peersRef: RefMap<Record<string, RTCPeerConnection>>,
+): Promise<void> {
   const peer = peersRef.current[sender];
   if (peer) {
     try {
@@ -121,7 +157,10 @@ export async function handleAnswer({ sender, sdp }, peersRef) {
   }
 }
 
-export function handleCandidate({ sender, candidate }, peersRef) {
+export function handleCandidate(
+  { sender, candidate }: CandidatePayload,
+  peersRef: RefMap<Record<string, RTCPeerConnection>>,
+): void {
   const peer = peersRef.current[sender];
   if (peer && candidate) {
     peer.addIceCandidate(new RTCIceCandidate(candidate));

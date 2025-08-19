@@ -1,4 +1,4 @@
-export const formatTimestamp = (isoString) => {
+export const formatTimestamp = (isoString: Date | null) => {
   if (!isoString) return "활동 없음";
 
   const chatDate = new Date(isoString);
