@@ -9,7 +9,6 @@ import PrivacySelector from "@/components/CreateRoomModal/PrivacySelector";
 import SubmitButton from "@/components/CreateRoomModal/SubmitButton";
 import CreateRoomHeader from "@/components/CreateRoomModal/CreateRoomHeader";
 import useClientIP from "@/hooks/useClientIP";
-import { incrementRoomCount } from "@/utils/setOrGetNicknameStats";
 
 interface CreateRoomPayload {
   ip: string;
@@ -28,7 +27,6 @@ export default function CreateRoomForm() {
   const clientIP = useClientIP();
   const setIsRoomCreation = useRoomCreationStore((state) => state.setIsRoomCreation);
   const fetchRooms = useRoomListStore((state) => state.fetchRooms as (ip: string) => Promise<void>);
-  const nickName = localStorage.getItem("nickName");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,12 +42,10 @@ export default function CreateRoomForm() {
     };
 
     try {
-      const res = await createRoom(payload);
+      const { roomId } = await createRoom(payload);
 
-      const result = await res.json();
       await fetchRooms(clientIP);
-      incrementRoomCount(nickName);
-      console.log("방 생성 완료", result);
+      console.log("방 생성 완료", roomId);
     } catch (err) {
       console.error("방 생성 실패", err);
     }

@@ -7,7 +7,6 @@ import { getOrCreateOwnerId } from "@/utils/getOrCreateOwnerId";
 import PasswordModal from "@/components/PasswordConfirmModal/PasswordModal";
 import RoomDeleteModal from "@/components/RoomDeleteModal/RoomDeleteModal";
 import { formatTimestamp } from "@/utils/formatTimestamp";
-import { decrementRoomCount } from "@/utils/setOrGetNicknameStats";
 import useClientIP from "@/hooks/useClientIP";
 
 interface ChatRoomCardProps {
@@ -71,8 +70,6 @@ export default function ChatRoomCard(props: ChatRoomCardProps) {
   const handleDeleteRoom = async (): Promise<void> => {
     try {
       await deleteRoom({ ownerId, roomId });
-
-      decrementRoomCount(nickName as string);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error("삭제 에러:", msg);
